@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard';
 import Library from './pages/Library';
 import Community from './pages/Community';
 import Lab from './pages/Lab';
+import AIAccounts from './pages/AIAccounts';
 import { AuthProvider } from './contexts/AuthContext';
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="library" element={<Library />} />
             <Route path="community" element={<Community />} />
             <Route path="lab" element={<Lab />} />
+          <Route path="ai-accounts" element={<AIAccounts />} />
           </Route>
           {/* LMS is outside Layout because it has its own full-screen layout */}
           <Route path="/learn/:id" element={<LMS />} />

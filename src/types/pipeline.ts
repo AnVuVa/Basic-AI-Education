@@ -3,7 +3,7 @@
 export type BlockCategory =
   | 'trigger' | 'source' | 'filter' | 'understand'
   | 'condition' | 'decide' | 'approval' | 'action'
-  | 'notify' | 'state';
+  | 'notify' | 'state' | 'ai-model';
 
 export type RuntimeNodeType =
   | 'watch' | 'source' | 'filter' | 'understand'

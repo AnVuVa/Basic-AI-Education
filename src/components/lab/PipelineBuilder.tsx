@@ -7,12 +7,14 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import {
-  ArrowLeft, Search, Save, Play, Upload, Loader2, Trash2, Bot, User,
-  Send, Settings2,
+  ArrowLeft, Search, Save, Play, Upload, Loader2, Bot, User,
+  Send, Settings2, Star, ArrowLeftRight, BookOpen, X, ChevronDown, ChevronUp, Trash2,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import PipelineBlockNode from './PipelineBlockNode';
 import { BLOCK_REGISTRY, BLOCK_CATEGORIES } from '../../data/pipeline/blockRegistry';
+import { AI_PROVIDER_META } from '../../data/pipeline/aiProviders';
+import { BAI_PROMPT_LIBRARY, getPromptsForBlock, type BAIPrompt } from '../../data/pipeline/promptLibrary';
 import { usePipeline } from '../../contexts/PipelineContext';
 import type { Pipeline, PipelineNode, PipelineEdge, FieldDef, PipelinePolicy } from '../../types/pipeline';
 import { DEFAULT_POLICY } from '../../types/pipeline';
@@ -116,6 +118,209 @@ function PolicyEditor({ policy, onChange }: { policy: PipelinePolicy; onChange: 
   );
 }
 
+// ── Prompt Library modal ───────────────────────────────────────────
+
+function PromptModal({ blockId, onSelect, onClose }: {
+  blockId: string;
+  onSelect: (prompt: BAIPrompt) => void;
+  onClose: () => void;
+}) {
+  const prompts = getPromptsForBlock(blockId);
+  const allPrompts = prompts.length > 0 ? prompts : BAI_PROMPT_LIBRARY.slice(0, 5);
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-700/60">
+          <BookOpen size={16} className="text-sky-400" />
+          <div className="flex-1">
+            <h2 className="text-sm font-semibold text-slate-200">Thư viện Prompt BAIEdu</h2>
+            <p className="text-[11px] text-slate-500">Chọn prompt và so sánh trước khi áp dụng</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-slate-200">
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Comparison table header */}
+        <div className="grid grid-cols-[1fr_80px_70px_70px_60px] gap-2 px-5 py-2 bg-slate-800/60 border-b border-slate-700/40 text-[10px] text-slate-500 uppercase tracking-wide font-medium">
+          <span>Prompt</span>
+          <span className="text-center">Cấu trúc</span>
+          <span className="text-center">Tokens</span>
+          <span className="text-center">Thời gian</span>
+          <span className="text-center">Điểm</span>
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          {allPrompts.map(p => (
+            <div key={p.id} className="border-b border-slate-700/40 last:border-0">
+              <div
+                className="grid grid-cols-[1fr_80px_70px_70px_60px] gap-2 px-5 py-3 hover:bg-slate-800/40 cursor-pointer items-start"
+                onClick={() => setExpanded(expanded === p.id ? null : p.id)}
+              >
+                <div>
+                  <div className="text-xs font-semibold text-slate-200">{p.title}</div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">{p.description}</div>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {p.tags.map(t => (
+                      <span key={t} className="text-[9px] px-1.5 py-0.5 rounded-full bg-slate-700 text-slate-400">{t}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-center text-[10px] text-slate-400 leading-tight">{p.structure.split('(')[0].trim()}</div>
+                <div className="text-center text-[10px] text-amber-400 font-mono">{p.estimatedTokens}</div>
+                <div className="text-center text-[10px] text-green-400">{p.estimatedTime}</div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-0.5">
+                    <Star size={10} className="text-yellow-400 fill-yellow-400" />
+                    <span className="text-[10px] text-yellow-400 font-semibold">{p.rating}</span>
+                  </div>
+                  <div className="text-[9px] text-slate-600">{p.usageCount.toLocaleString()}</div>
+                </div>
+              </div>
+
+              {/* Expanded: full prompt + apply */}
+              {expanded === p.id && (
+                <div className="px-5 pb-4 bg-slate-800/40">
+                  <div className="bg-slate-950 rounded-lg p-3 font-mono text-[11px] text-slate-300 whitespace-pre-wrap leading-relaxed mb-3 max-h-40 overflow-y-auto border border-slate-700/40">
+                    {p.prompt}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-[10px] text-slate-500">Cấu trúc: {p.structure}</div>
+                    <button
+                      onClick={() => { onSelect(p); onClose(); }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 rounded-lg text-xs text-white transition-colors"
+                    >
+                      Áp dụng prompt này
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── AI Model inspector tab ─────────────────────────────────────────
+
+function AIModelPanel({ blockId, onSwapBlock }: { blockId: string; onSwapBlock: (newBlockId: string) => void }) {
+  const meta = AI_PROVIDER_META[blockId];
+  const [showPromptModal, setShowPromptModal] = useState(false);
+  const [showAlts, setShowAlts] = useState(false);
+
+  if (!meta) return <p className="text-xs text-slate-500 text-center py-4">Không có metadata</p>;
+
+  const altBlocks = meta.alternatives.map(id => ({
+    id,
+    block: BLOCK_REGISTRY[id],
+    altMeta: AI_PROVIDER_META[id],
+  })).filter(a => a.block);
+
+  return (
+    <div className="space-y-3 p-3">
+      {/* Provider header */}
+      <div className="bg-slate-700/40 rounded-xl p-3 flex items-center gap-3">
+        <div className={`text-2xl w-10 h-10 rounded-xl flex items-center justify-center ${meta.color}`}>
+          {meta.icon}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-xs font-bold text-slate-200">{meta.name}</div>
+          <div className="text-[10px] text-slate-500">{meta.provider} · {meta.modelVersion}</div>
+          <div className="text-[10px] text-slate-400 mt-0.5">{meta.contextWindow} context</div>
+        </div>
+      </div>
+
+      {/* Purpose */}
+      <div>
+        <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">Vai trò trong pipeline</div>
+        <p className="text-xs text-slate-300 bg-slate-800/60 rounded-lg p-2 leading-relaxed">{meta.purpose}</p>
+      </div>
+
+      {/* Pricing */}
+      <div className="flex gap-2">
+        <div className="flex-1 bg-slate-800/60 rounded-lg p-2.5 text-center">
+          <div className="text-[9px] text-slate-500 uppercase">Giá</div>
+          <div className={`text-[11px] font-semibold ${meta.accent}`}>{meta.pricing}</div>
+        </div>
+        <div className="flex-1 bg-slate-800/60 rounded-lg p-2.5 text-center">
+          <div className="text-[9px] text-slate-500 uppercase">Context</div>
+          <div className="text-[11px] font-semibold text-slate-300">{meta.contextWindow}</div>
+        </div>
+      </div>
+
+      {/* Strengths */}
+      <div>
+        <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1.5">Ưu điểm</div>
+        {meta.strengths.map(s => (
+          <div key={s} className="flex items-start gap-1.5 mb-1">
+            <span className="text-green-400 mt-0.5 shrink-0">✓</span>
+            <span className="text-[11px] text-slate-300">{s}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Prompt library button */}
+      <button
+        onClick={() => setShowPromptModal(true)}
+        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-sky-900/40 hover:bg-sky-900/70 border border-sky-800/40 rounded-lg text-xs text-sky-300 transition-colors"
+      >
+        <BookOpen size={12} /> Chọn prompt từ thư viện BAIEdu
+      </button>
+
+      {/* Alternatives */}
+      {altBlocks.length > 0 && (
+        <div>
+          <button
+            onClick={() => setShowAlts(!showAlts)}
+            className="w-full flex items-center justify-between px-2 py-1.5 text-[11px] text-slate-400 hover:text-slate-200 transition-colors"
+          >
+            <span className="flex items-center gap-1.5"><ArrowLeftRight size={11} /> Thay thế bằng AI khác ({altBlocks.length})</span>
+            {showAlts ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+          </button>
+          {showAlts && (
+            <div className="space-y-2 mt-1">
+              {altBlocks.map(({ id, block, altMeta }) => (
+                <div key={id} className="bg-slate-800/60 rounded-lg p-2.5 flex items-center gap-2">
+                  <div className={`text-sm w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${altMeta?.color ?? 'bg-slate-700'}`}>
+                    {altMeta?.icon ?? '?'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[11px] font-semibold text-slate-200 truncate">{block!.label}</div>
+                    <div className="text-[9px] text-slate-500 truncate">{altMeta?.pricing}</div>
+                  </div>
+                  <button
+                    onClick={() => onSwapBlock(id)}
+                    className="shrink-0 text-[10px] px-2 py-1 bg-slate-700 hover:bg-sky-700 rounded-md text-slate-300 hover:text-white transition-colors"
+                  >
+                    Dùng
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {showPromptModal && (
+        <PromptModal
+          blockId={blockId}
+          onSelect={p => {
+            // The prompt will be applied by the parent via onSelect callback
+            // We emit via custom event for simplicity
+            window.dispatchEvent(new CustomEvent('baiprompt:select', { detail: p }));
+          }}
+          onClose={() => setShowPromptModal(false)}
+        />
+      )}
+    </div>
+  );
+}
+
 // ── Chat messages ──────────────────────────────────────────────────
 
 interface ChatMsg { role: 'user' | 'bot'; text: string }
@@ -158,7 +363,7 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
 
   // Inspector state
   const [selectedNodeId, setSelectedNodeId]   = useState<string | null>(null);
-  const [inspectorTab, setInspectorTab]        = useState<'basic' | 'advanced' | 'policy'>('basic');
+  const [inspectorTab, setInspectorTab]        = useState<'basic' | 'advanced' | 'policy' | 'model'>('basic');
   const [pipelineName, setPipelineName]        = useState(pipeline.name);
   const [policy, setPolicy]                   = useState<PipelinePolicy>(pipeline.policy ?? DEFAULT_POLICY);
 
@@ -285,11 +490,41 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: RFNode) => {
     setSelectedNodeId(node.id);
-    setInspectorTab('basic');
+    const block = BLOCK_REGISTRY[node.data.blockId as string];
+    setInspectorTab(block?.category === 'ai-model' ? 'model' : 'basic');
     setRightTab('inspector');
   }, []);
 
   const onPaneClick = useCallback(() => setSelectedNodeId(null), []);
+
+  // ── Swap block ────────────────────────────────────────────────────
+
+  const onSwapBlock = useCallback((newBlockId: string) => {
+    if (!selectedNodeId) return;
+    const newBlock = BLOCK_REGISTRY[newBlockId];
+    if (!newBlock) return;
+    setNodes(prev => prev.map(n =>
+      n.id === selectedNodeId
+        ? { ...n, data: { ...n.data, blockId: newBlockId, config: { ...newBlock.defaultConfig }, label: newBlock.label } }
+        : n
+    ));
+  }, [selectedNodeId, setNodes]);
+
+  // ── Prompt selection event ────────────────────────────────────────
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const prompt = (e as CustomEvent).detail;
+      if (!prompt || !selectedNodeId) return;
+      setNodes(prev => prev.map(n =>
+        n.id === selectedNodeId
+          ? { ...n, data: { ...n.data, config: { ...(n.data.config as Record<string,any>), prompt: prompt.prompt } } }
+          : n
+      ));
+    };
+    window.addEventListener('baiprompt:select', handler);
+    return () => window.removeEventListener('baiprompt:select', handler);
+  }, [selectedNodeId, setNodes]);
 
   // ── Node config ──────────────────────────────────────────────────
 
@@ -513,13 +748,16 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
               </div>
 
               <div className="flex border-b border-slate-700/60 shrink-0">
-                {(['basic', 'advanced', 'policy'] as const).map(tab => (
+                {(selectedBlock?.category === 'ai-model'
+                  ? ['model', 'basic', 'advanced', 'policy'] as const
+                  : ['basic', 'advanced', 'policy'] as const
+                ).map(tab => (
                   <button
                     key={tab}
                     onClick={() => setInspectorTab(tab)}
                     className={`flex-1 py-1.5 text-[11px] font-medium transition-colors ${inspectorTab === tab ? 'text-sky-400 border-b-2 border-sky-400' : 'text-slate-500 hover:text-slate-300'}`}
                   >
-                    {tab === 'basic' ? 'Cơ bản' : tab === 'advanced' ? 'Nâng cao' : 'Policy'}
+                    {tab === 'basic' ? 'Cơ bản' : tab === 'advanced' ? 'Nâng cao' : tab === 'policy' ? 'Policy' : 'AI'}
                   </button>
                 ))}
               </div>
@@ -565,6 +803,12 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
                   </>
                 )}
                 {inspectorTab === 'policy' && <PolicyEditor policy={policy} onChange={setPolicy} />}
+                {inspectorTab === 'model' && (
+                  <AIModelPanel
+                    blockId={selectedNode.data.blockId as string}
+                    onSwapBlock={onSwapBlock}
+                  />
+                )}
               </div>
             </>
           ) : (

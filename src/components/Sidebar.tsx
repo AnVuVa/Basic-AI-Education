@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   GraduationCap, Sparkles, BookOpen, Zap,
-  Library, Users, Layout, Info, Plus, LogIn, LogOut,
+  Library, Users, Layout, Info, Plus, LogIn, LogOut, Bot,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from './AuthModal';
@@ -77,9 +77,10 @@ export default function Sidebar() {
 
         <SidebarItem icon={Sparkles} label="Trang chủ" to="/"         active={isActive('/')} />
         <SidebarItem icon={BookOpen} label="Khóa học"  to="/courses"   active={isActive('/courses')} />
-        <SidebarItem icon={Zap}      label="Phòng Lab" to="/lab"       active={isActive('/lab')} />
-        <SidebarItem icon={Library}  label="Thư viện"  to="/library"   active={isActive('/library')} />
-        <SidebarItem icon={Users}    label="Cộng đồng" to="/community" active={isActive('/community')} />
+        <SidebarItem icon={Zap}      label="Phòng Lab" to="/lab"          active={isActive('/lab')} />
+        <SidebarItem icon={Bot}      label="AI Keys"   to="/ai-accounts" active={isActive('/ai-accounts')} />
+        <SidebarItem icon={Library}  label="Thư viện"  to="/library"     active={isActive('/library')} />
+        <SidebarItem icon={Users}    label="Cộng đồng" to="/community"   active={isActive('/community')} />
 
         {/* Spacer */}
         <div className="flex-1" />
