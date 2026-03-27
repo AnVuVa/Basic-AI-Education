@@ -9,6 +9,8 @@ export interface PipelineBlockNodeData extends Record<string, unknown> {
   config: Record<string, any>;
   label?: string;
   stepStatus?: 'running' | 'success' | 'failed' | 'waiting' | 'skipped';
+  embeddedAiId?: string;
+  embeddedAiLabel?: string;
 }
 
 export type PBNode = Node<PipelineBlockNodeData, 'pipelineBlock'>;
@@ -118,6 +120,15 @@ export default function PipelineBlockNode({ id, data, selected }: NodeProps<PBNo
         {block.category === 'ai-model' && !data.stepStatus && (
           <div className="mt-1">
             <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-900/60 text-violet-300 font-medium">AI Model</span>
+          </div>
+        )}
+
+        {/* Embedded AI badge (when an AI block was dropped onto this block) */}
+        {data.embeddedAiId && !data.stepStatus && (
+          <div className="mt-1 flex items-center gap-1">
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-sky-900/60 text-sky-300 border border-sky-700/40 font-medium flex items-center gap-1">
+              ⚡ {String(data.embeddedAiLabel || data.embeddedAiId)}
+            </span>
           </div>
         )}
       </div>

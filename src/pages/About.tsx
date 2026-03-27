@@ -19,7 +19,7 @@ const staggerContainer = {
 
 export default function About() {
   return (
-    <div className="flex flex-col bg-white">
+    <div className="flex flex-col bg-white dark:bg-[#0e0a20]">
       {/* 1. Hero Section */}
       <section className="relative bg-slate-900 text-white overflow-hidden pt-20 pb-32 lg:pt-32 lg:pb-40">
         <div className="absolute inset-0 opacity-20">
@@ -79,7 +79,7 @@ export default function About() {
       </section>
 
       {/* 2. Problem Section */}
-      <section className="py-24 bg-slate-50">
+      <section className="py-24 bg-slate-50 dark:bg-[#0d0d2b]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -88,8 +88,8 @@ export default function About() {
             variants={fadeIn}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Mặt trái của sự bùng nổ AI</h2>
-            <p className="text-lg text-slate-600">Sự phát triển quá nhanh của Trí tuệ nhân tạo đang để lại những khoảng trống lớn trong nhận thức và giáo dục.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">Mặt trái của sự bùng nổ AI</h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400">Sự phát triển quá nhanh của Trí tuệ nhân tạo đang để lại những khoảng trống lớn trong nhận thức và giáo dục.</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -100,33 +100,33 @@ export default function About() {
               variants={staggerContainer}
               className="space-y-6"
             >
-              <motion.div variants={fadeIn} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex gap-4">
+              <motion.div variants={fadeIn} className="bg-white dark:bg-slate-800/60 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/50 flex gap-4">
                 <div className="w-12 h-12 bg-red-50 text-red-500 rounded-xl flex items-center justify-center shrink-0">
                   <BookX size={24} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">Đạo văn & Gian lận học thuật</h3>
-                  <p className="text-slate-600">Sự lạm dụng AI tạo sinh khiến học sinh, sinh viên phụ thuộc, đánh mất khả năng tự nghiên cứu và viết lách.</p>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">Đạo văn & Gian lận học thuật</h3>
+                  <p className="text-slate-600 dark:text-slate-400">Sự lạm dụng AI tạo sinh khiến học sinh, sinh viên phụ thuộc, đánh mất khả năng tự nghiên cứu và viết lách.</p>
                 </div>
               </motion.div>
 
-              <motion.div variants={fadeIn} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex gap-4">
+              <motion.div variants={fadeIn} className="bg-white dark:bg-slate-800/60 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/50 flex gap-4">
                 <div className="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center shrink-0">
                   <ShieldAlert size={24} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">Thui chột tư duy phản biện</h3>
-                  <p className="text-slate-600">Tiếp nhận thông tin từ AI một cách thụ động mà không có khả năng kiểm chứng tính đúng sai của dữ liệu.</p>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">Thui chột tư duy phản biện</h3>
+                  <p className="text-slate-600 dark:text-slate-400">Tiếp nhận thông tin từ AI một cách thụ động mà không có khả năng kiểm chứng tính đúng sai của dữ liệu.</p>
                 </div>
               </motion.div>
 
-              <motion.div variants={fadeIn} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex gap-4">
+              <motion.div variants={fadeIn} className="bg-white dark:bg-slate-800/60 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/50 flex gap-4">
                 <div className="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center shrink-0">
                   <AlertTriangle size={24} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">Tin giả & Deepfake</h3>
-                  <p className="text-slate-600">Không thể phân biệt được nội dung thật giả, dễ dàng trở thành nạn nhân hoặc công cụ lan truyền thông tin sai lệch.</p>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">Tin giả & Deepfake</h3>
+                  <p className="text-slate-600 dark:text-slate-400">Không thể phân biệt được nội dung thật giả, dễ dàng trở thành nạn nhân hoặc công cụ lan truyền thông tin sai lệch.</p>
                 </div>
               </motion.div>
             </motion.div>
@@ -159,7 +159,7 @@ export default function About() {
       </section>
 
       {/* 3. Solution Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-white dark:bg-[#0e0a20]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -168,8 +168,8 @@ export default function About() {
             variants={fadeIn}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Giải pháp từ BAIEdu</h2>
-            <p className="text-lg text-slate-600">3 trụ cột cốt lõi giúp định hình tư duy và trang bị kỹ năng cho thế hệ công dân số mới.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">Giải pháp từ BAIEdu</h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400">3 trụ cột cốt lõi giúp định hình tư duy và trang bị kỹ năng cho thế hệ công dân số mới.</p>
           </motion.div>
 
           <motion.div
@@ -179,28 +179,28 @@ export default function About() {
             variants={staggerContainer}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
-            <motion.div variants={fadeIn} className="text-center p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300">
+            <motion.div variants={fadeIn} className="text-center p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/30 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300">
               <div className="w-20 h-20 mx-auto bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 rotate-3 hover:rotate-0 transition-transform">
                 <ShieldCheck size={40} />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Nền tảng Đạo đức & Trách nhiệm</h3>
-              <p className="text-slate-600 leading-relaxed">Xây dựng nhận thức đúng đắn về bản quyền, bảo mật dữ liệu và tính công bằng.</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Nền tảng Đạo đức & Trách nhiệm</h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Xây dựng nhận thức đúng đắn về bản quyền, bảo mật dữ liệu và tính công bằng.</p>
             </motion.div>
 
-            <motion.div variants={fadeIn} className="text-center p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300">
+            <motion.div variants={fadeIn} className="text-center p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/30 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300">
               <div className="w-20 h-20 mx-auto bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 -rotate-3 hover:rotate-0 transition-transform">
                 <Users size={40} />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Bình dân học vụ số AI</h3>
-              <p className="text-slate-600 leading-relaxed">Đơn giản hóa các khái niệm công nghệ phức tạp. Bất kỳ ai cũng có thể hiểu và làm chủ AI.</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Bình dân học vụ số AI</h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Đơn giản hóa các khái niệm công nghệ phức tạp. Bất kỳ ai cũng có thể hiểu và làm chủ AI.</p>
             </motion.div>
 
-            <motion.div variants={fadeIn} className="text-center p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300">
+            <motion.div variants={fadeIn} className="text-center p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/30 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300">
               <div className="w-20 h-20 mx-auto bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mb-6 rotate-3 hover:rotate-0 transition-transform">
                 <Lightbulb size={40} />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Đồng kiến tạo thay vì ỷ lại</h3>
-              <p className="text-slate-600 leading-relaxed">Chuyển đổi tư duy từ "nhờ AI làm hộ" sang "cùng AI sáng tạo".</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Đồng kiến tạo thay vì ỷ lại</h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Chuyển đổi tư duy từ "nhờ AI làm hộ" sang "cùng AI sáng tạo".</p>
             </motion.div>
           </motion.div>
         </div>

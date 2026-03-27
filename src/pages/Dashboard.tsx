@@ -28,11 +28,11 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="bg-slate-50 min-h-screen py-8">
+    <div className="bg-slate-50 dark:bg-[#0e0a20] min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header & Gamification Overview */}
-        <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm mb-8 flex flex-col md:flex-row gap-8 items-center justify-between relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-800/60 rounded-3xl p-6 md:p-8 border border-slate-200 dark:border-slate-700/50 shadow-sm mb-8 flex flex-col md:flex-row gap-8 items-center justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
           
           <div className="flex items-center gap-6 relative z-10 w-full md:w-auto">
@@ -43,8 +43,8 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-1">Xin chào, {user.name}!</h1>
-              <p className="text-slate-500">Tiếp tục giữ vững phong độ nhé.</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-1">Xin chào, {user.name}!</h1>
+              <p className="text-slate-500 dark:text-slate-400">Tiếp tục giữ vững phong độ nhé.</p>
             </div>
           </div>
 
@@ -83,31 +83,31 @@ export default function Dashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-slate-800/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
               <BookOpen size={24} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900">{user.totalCourses}</div>
-              <div className="text-sm text-slate-500">Khóa học đang học</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{user.totalCourses}</div>
+              <div className="text-sm text-slate-500 dark:text-slate-400">Khóa học đang học</div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-slate-800/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
               <Award size={24} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900">{user.totalCertificates}</div>
-              <div className="text-sm text-slate-500">Chứng chỉ đã đạt</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{user.totalCertificates}</div>
+              <div className="text-sm text-slate-500 dark:text-slate-400">Chứng chỉ đã đạt</div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-slate-800/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center shrink-0">
               <Clock size={24} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900">{user.learningHours}</div>
-              <div className="text-sm text-slate-500">Thời gian học tập</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{user.learningHours}</div>
+              <div className="text-sm text-slate-500 dark:text-slate-400">Thời gian học tập</div>
             </div>
           </div>
         </div>
@@ -119,11 +119,11 @@ export default function Dashboard() {
             {/* Continue Learning */}
             <section>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-slate-900">Tiếp tục học</h2>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Tiếp tục học</h2>
               </div>
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <div className="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                 <div className="p-6 flex flex-col sm:flex-row gap-6 items-center">
-                  <div className="w-full sm:w-48 aspect-video bg-slate-100 rounded-xl overflow-hidden shrink-0 relative group cursor-pointer">
+                  <div className="w-full sm:w-48 aspect-video bg-slate-100 dark:bg-slate-700 rounded-xl overflow-hidden shrink-0 relative group cursor-pointer">
                     <img src="https://picsum.photos/seed/ai-safety/600/400" alt="Course" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center group-hover:bg-black/40 transition-colors">
                       <PlayCircle size={40} className="text-white opacity-90 group-hover:scale-110 transition-transform" />
@@ -131,9 +131,9 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 w-full">
                     <div className="text-sm font-semibold text-blue-600 mb-1">Học phần 1 • Bài 2</div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-2">Nguyên tắc đạo đức khi dùng AI</h3>
-                    <div className="flex items-center gap-3 text-sm text-slate-500 mb-4">
-                      <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Nguyên tắc đạo đức khi dùng AI</h3>
+                    <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400 mb-4">
+                      <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
                         <div className="bg-blue-500 h-full rounded-full" style={{ width: '25%' }}></div>
                       </div>
                       <span className="font-medium">25%</span>
@@ -149,20 +149,20 @@ export default function Dashboard() {
             {/* Badges (Huy hiệu) */}
             <section>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                   <Award className="text-yellow-500" /> Bộ sưu tập Huy hiệu
                 </h2>
                 <button className="text-sm font-medium text-blue-600 hover:text-blue-800">Xem tất cả</button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {badges.map(badge => (
-                  <div key={badge.id} className={`p-4 rounded-2xl border ${badge.unlocked ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-50 border-slate-200 border-dashed opacity-70'} flex gap-4 items-start`}>
+                  <div key={badge.id} className={`p-4 rounded-2xl border ${badge.unlocked ? 'bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/50 shadow-sm' : 'bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700/40 border-dashed opacity-70'} flex gap-4 items-start`}>
                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${badge.unlocked ? 'bg-gradient-to-br from-yellow-100 to-orange-100 text-orange-500' : 'bg-slate-200 text-slate-400'}`}>
                       {badge.unlocked ? badge.icon : <Lock size={24} />}
                     </div>
                     <div className="flex-1">
-                      <h4 className={`font-bold mb-1 ${badge.unlocked ? 'text-slate-900' : 'text-slate-500'}`}>{badge.name}</h4>
-                      <p className="text-xs text-slate-500 mb-2">{badge.description}</p>
+                      <h4 className={`font-bold mb-1 ${badge.unlocked ? 'text-slate-900 dark:text-slate-100' : 'text-slate-500 dark:text-slate-500'}`}>{badge.name}</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">{badge.description}</p>
                       {badge.unlocked ? (
                         <div className="text-xs font-medium text-emerald-600 bg-emerald-50 inline-block px-2 py-1 rounded-md">
                           Đạt được: {badge.date}
@@ -173,8 +173,8 @@ export default function Dashboard() {
                             <span>Tiến độ</span>
                             <span>{badge.progress}/{badge.total}</span>
                           </div>
-                          <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                            <div className="bg-slate-400 h-full rounded-full" style={{ width: `${(badge.progress! / badge.total!) * 100}%` }}></div>
+                          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                            <div className="bg-slate-400 dark:bg-slate-500 h-full rounded-full" style={{ width: `${(badge.progress! / badge.total!) * 100}%` }}></div>
                           </div>
                         </div>
                       )}
@@ -189,9 +189,9 @@ export default function Dashboard() {
           <div className="space-y-8">
             
             {/* Vouchers / Rewards */}
-            <section className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+            <section className="bg-white dark:bg-slate-800/60 p-6 rounded-3xl border border-slate-200 dark:border-slate-700/50 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                   <Gift className="text-purple-500" /> Đổi thưởng
                 </h2>
                 <div className="bg-blue-50 text-blue-600 text-sm font-bold px-3 py-1 rounded-lg">
@@ -201,14 +201,14 @@ export default function Dashboard() {
               
               <div className="space-y-4">
                 {vouchers.map(voucher => (
-                  <div key={voucher.id} className="border border-slate-100 rounded-2xl p-4 hover:border-purple-200 hover:shadow-md transition-all group">
+                  <div key={voucher.id} className="border border-slate-100 dark:border-slate-700/50 rounded-2xl p-4 hover:border-purple-200 dark:hover:border-purple-700 hover:shadow-md transition-all group">
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-bold text-slate-900 group-hover:text-purple-700 transition-colors">{voucher.title}</h4>
-                      <span className="bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                      <h4 className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">{voucher.title}</h4>
+                      <span className="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
                         {voucher.cost} <Zap size={12} className="text-yellow-500 fill-yellow-500" />
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 mb-3">{voucher.description}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{voucher.description}</p>
                     <button 
                       className={`w-full py-2 rounded-xl text-sm font-semibold transition-colors ${user.exp >= voucher.cost ? 'bg-purple-50 text-purple-600 hover:bg-purple-100' : 'bg-slate-50 text-slate-400 cursor-not-allowed'}`}
                       disabled={user.exp < voucher.cost}
