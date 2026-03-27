@@ -260,11 +260,67 @@ export const PIPELINE_TEMPLATES: PipelineTemplate[] = [
     ]),
     edges: [
       connect('n1', 'n2'), connect('n2', 'n3'), connect('n3', 'n4'),
-      connect('n4', 'n5', 'yes'),   // urgent → suggest reply
-      connect('n4', 'n7', 'no'),    // non-urgent → digest
+      connect('n4', 'n5', 'yes'),
+      connect('n4', 'n7', 'no'),
       connect('n5', 'n6'),
     ],
     policy: { approvalMode: 'ask_before_act', autoActAllowed: ['classify', 'suggest-reply', 'send-digest'] },
+  },
+
+  // ── 11. Tạo bài giảng Lịch Sử Việt Nam ──────────────────────────
+  {
+    id: 'tpl-lichsu-slide',
+    name: 'Tạo slide bài giảng Lịch Sử VN',
+    description: 'Pipeline AI đa mô hình: tra cứu → dàn ý → nội dung → slide → ảnh minh họa',
+    category: 'Giáo dục',
+    icon: 'GraduationCap',
+    color: 'from-violet-500 to-pink-600',
+    connectors: ['demo-ai'],
+    useCase: 'Giáo viên nhập chủ đề → AI tự động tra cứu, viết nội dung, tạo slide và ảnh minh họa lịch sử',
+    canDemoRun: true,
+    nodes: [
+      { id: 'ls1', blockId: 'manual-run',        position: { x: 60,  y: 160 }, config: { label: 'Nhập chủ đề bài giảng' } },
+      { id: 'ls2', blockId: 'perplexity-sonar',  position: { x: 300, y: 80  }, config: {
+          query: 'Chiến dịch Điện Biên Phủ 1954: nguyên nhân, diễn biến, kết quả và ý nghĩa lịch sử',
+          focus: 'academic', language: 'vi',
+        }},
+      { id: 'ls3', blockId: 'gemini-flash',      position: { x: 300, y: 240 }, config: {
+          prompt: 'Dựa trên thông tin tìm kiếm, tạo dàn ý chi tiết bài giảng "Chiến dịch Điện Biên Phủ 1954" cho học sinh THPT. Bao gồm: mục tiêu học, 10 ý chính, câu hỏi thảo luận.',
+          output_format: 'markdown', temperature: 0.6,
+        }},
+      { id: 'ls4', blockId: 'gpt-4o',           position: { x: 560, y: 160 }, config: {
+          prompt: 'Từ dàn ý sau, viết nội dung chi tiết cho 12 slide bài giảng. Mỗi slide: tiêu đề (≤8 từ) + 4 bullet points + ghi chú giáo viên + 3 từ khóa ảnh tiếng Anh.',
+          output_format: 'markdown', temperature: 0.7,
+        }},
+      { id: 'ls5', blockId: 'gamma-ai',         position: { x: 820, y: 80  }, config: {
+          slide_count: 12, theme: 'academic', language: 'vi', include_images: true,
+        }},
+      { id: 'ls6', blockId: 'midjourney',       position: { x: 820, y: 260 }, config: {
+          prompt: 'Vietnamese soldiers at Dien Bien Phu, 1954, cinematic historical painting, dramatic lighting, --ar 16:9 --q 2',
+          count: 4, aspect_ratio: '16:9',
+        }},
+      { id: 'ls7', blockId: 'send-notification', position: { x: 1080, y: 160 }, config: {
+          title: 'Bài giảng Lịch Sử đã sẵn sàng!',
+          body: 'Slide "Chiến dịch Điện Biên Phủ 1954" đã được tạo xong. Click để xem.',
+        }},
+    ],
+    edges: [
+      connect('ls1', 'ls2'),
+      connect('ls1', 'ls3'),
+      connect('ls2', 'ls4'),
+      connect('ls3', 'ls4'),
+      connect('ls4', 'ls5'),
+      connect('ls4', 'ls6'),
+      connect('ls5', 'ls7'),
+      connect('ls6', 'ls7'),
+    ],
+    policy: {
+      approvalMode: 'notify_only',
+      autoActAllowed: ['perplexity-sonar', 'gemini-flash', 'gpt-4o', 'gamma-ai', 'midjourney', 'send-notification'],
+      quietHoursStart: '22:00', quietHoursEnd: '07:00',
+      retryCount: 2, retryDelayMinutes: 3,
+      escalationAfterHours: 24, reminderCadenceHours: 4, dataScope: 'mine',
+    },
   },
 ];
 

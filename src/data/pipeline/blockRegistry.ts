@@ -5,6 +5,7 @@ import type { BlockDef, BlockCategory } from '../../types/pipeline';
 export const BLOCK_CATEGORIES: Array<{
   id: BlockCategory; label: string; icon: string; color: string; bgColor: string;
 }> = [
+  { id: 'ai-model',   label: 'Mô hình AI',         icon: 'Bot',         color: 'text-violet-300', bgColor: 'bg-violet-600' },
   { id: 'trigger',    label: 'Kích hoạt',          icon: 'Zap',         color: 'text-yellow-300', bgColor: 'bg-yellow-600' },
   { id: 'source',     label: 'Nguồn dữ liệu',      icon: 'Database',    color: 'text-blue-300',   bgColor: 'bg-blue-600'   },
   { id: 'filter',     label: 'Lọc & định tuyến',   icon: 'Filter',      color: 'text-indigo-300', bgColor: 'bg-indigo-600' },
@@ -1106,6 +1107,281 @@ export const BLOCK_REGISTRY: Record<string, BlockDef> = {
       { id: 'limit_reached', label: 'Đã đủ số lần', type: 'control' },
     ],
     defaultConfig: { counter_key: 'remind_count', max_count: 3 },
+  },
+
+  // ── AI MODEL BLOCKS ─────────────────────────────────────────────
+
+  'gemini-flash': {
+    id: 'gemini-flash', label: 'Gemini 1.5 Flash', category: 'ai-model',
+    description: 'Google Gemini nhanh & rẻ — tóm tắt, dàn ý, phân loại',
+    icon: 'Sparkles', color: 'bg-violet-600',
+    runtimeMapping: 'understand',
+    basicFields: [
+      { key: 'prompt', label: 'Prompt / Hướng dẫn', type: 'textarea', placeholder: 'Mô tả nhiệm vụ cho Gemini...', required: true },
+      { key: 'input_field', label: 'Trường đầu vào', type: 'text', placeholder: 'content', default: 'content', helper: 'Tên field từ bước trước' },
+      { key: 'output_format', label: 'Định dạng đầu ra', type: 'select', options: [
+          { label: 'Plain text', value: 'text' },
+          { label: 'Bullet points', value: 'bullets' },
+          { label: 'JSON', value: 'json' },
+          { label: 'Markdown', value: 'markdown' },
+        ], default: 'text' },
+    ],
+    advancedFields: [
+      { key: 'temperature', label: 'Temperature', type: 'number', default: 0.7, helper: '0 = chính xác, 1 = sáng tạo' },
+      { key: 'max_tokens', label: 'Max output tokens', type: 'number', default: 1024 },
+      { key: 'system_prompt', label: 'System prompt', type: 'textarea', placeholder: 'Bạn là giáo viên lịch sử...' },
+    ],
+    inputPorts: [{ id: 'data', label: 'Dữ liệu', type: 'data' }],
+    outputPorts: [{ id: 'result', label: 'Kết quả', type: 'data' }],
+    defaultConfig: { prompt: '', input_field: 'content', output_format: 'text', temperature: 0.7, max_tokens: 1024 },
+  },
+
+  'gemini-pro': {
+    id: 'gemini-pro', label: 'Gemini 2.0 Flash', category: 'ai-model',
+    description: 'Google Gemini mạnh nhất — phân tích sâu, viết nội dung dài',
+    icon: 'Wand2', color: 'bg-violet-700',
+    runtimeMapping: 'understand',
+    basicFields: [
+      { key: 'prompt', label: 'Prompt / Hướng dẫn', type: 'textarea', placeholder: 'Mô tả nhiệm vụ...', required: true },
+      { key: 'input_field', label: 'Trường đầu vào', type: 'text', default: 'content' },
+      { key: 'output_format', label: 'Định dạng đầu ra', type: 'select', options: [
+          { label: 'Plain text', value: 'text' },
+          { label: 'Markdown', value: 'markdown' },
+          { label: 'JSON', value: 'json' },
+        ], default: 'markdown' },
+    ],
+    advancedFields: [
+      { key: 'temperature', label: 'Temperature', type: 'number', default: 0.5 },
+      { key: 'max_tokens', label: 'Max tokens', type: 'number', default: 4096 },
+      { key: 'system_prompt', label: 'System prompt', type: 'textarea' },
+      { key: 'grounding', label: 'Google Search grounding', type: 'toggle', default: false, helper: 'Kết nối tìm kiếm thực' },
+    ],
+    inputPorts: [{ id: 'data', label: 'Dữ liệu', type: 'data' }],
+    outputPorts: [{ id: 'result', label: 'Kết quả', type: 'data' }],
+    defaultConfig: { prompt: '', input_field: 'content', output_format: 'markdown', temperature: 0.5, max_tokens: 4096 },
+  },
+
+  'gpt-4o': {
+    id: 'gpt-4o', label: 'ChatGPT GPT-4o', category: 'ai-model',
+    description: 'OpenAI GPT-4o — chất lượng cao nhất, structured output',
+    icon: 'MessageSquare', color: 'bg-emerald-700',
+    runtimeMapping: 'understand',
+    basicFields: [
+      { key: 'prompt', label: 'Prompt', type: 'textarea', required: true },
+      { key: 'input_field', label: 'Trường đầu vào', type: 'text', default: 'content' },
+      { key: 'output_format', label: 'Định dạng', type: 'select', options: [
+          { label: 'Text', value: 'text' },
+          { label: 'JSON', value: 'json' },
+          { label: 'Markdown', value: 'markdown' },
+        ], default: 'text' },
+    ],
+    advancedFields: [
+      { key: 'temperature', label: 'Temperature', type: 'number', default: 0.7 },
+      { key: 'max_tokens', label: 'Max tokens', type: 'number', default: 2048 },
+      { key: 'system_prompt', label: 'System prompt', type: 'textarea' },
+    ],
+    inputPorts: [{ id: 'data', label: 'Dữ liệu', type: 'data' }],
+    outputPorts: [{ id: 'result', label: 'Kết quả', type: 'data' }],
+    defaultConfig: { prompt: '', input_field: 'content', output_format: 'text', temperature: 0.7, max_tokens: 2048 },
+  },
+
+  'gpt-4o-mini': {
+    id: 'gpt-4o-mini', label: 'ChatGPT 4o Mini', category: 'ai-model',
+    description: 'OpenAI GPT-4o Mini — nhanh, rẻ, tóm tắt và phân loại',
+    icon: 'MessageCircle', color: 'bg-emerald-600',
+    runtimeMapping: 'understand',
+    basicFields: [
+      { key: 'prompt', label: 'Prompt', type: 'textarea', required: true },
+      { key: 'input_field', label: 'Trường đầu vào', type: 'text', default: 'content' },
+    ],
+    advancedFields: [
+      { key: 'temperature', label: 'Temperature', type: 'number', default: 0.5 },
+      { key: 'max_tokens', label: 'Max tokens', type: 'number', default: 512 },
+    ],
+    inputPorts: [{ id: 'data', label: 'Dữ liệu', type: 'data' }],
+    outputPorts: [{ id: 'result', label: 'Kết quả', type: 'data' }],
+    defaultConfig: { prompt: '', input_field: 'content', temperature: 0.5, max_tokens: 512 },
+  },
+
+  'claude-sonnet': {
+    id: 'claude-sonnet', label: 'Claude Sonnet 4', category: 'ai-model',
+    description: 'Anthropic Claude — xuất sắc về viết văn bản dài và học thuật',
+    icon: 'PenTool', color: 'bg-orange-700',
+    runtimeMapping: 'understand',
+    basicFields: [
+      { key: 'prompt', label: 'Prompt', type: 'textarea', required: true },
+      { key: 'input_field', label: 'Trường đầu vào', type: 'text', default: 'content' },
+      { key: 'style', label: 'Phong cách viết', type: 'select', options: [
+          { label: 'Học thuật', value: 'academic' },
+          { label: 'Thân thiện', value: 'friendly' },
+          { label: 'Ngắn gọn', value: 'concise' },
+          { label: 'Chi tiết', value: 'detailed' },
+        ], default: 'academic' },
+    ],
+    advancedFields: [
+      { key: 'temperature', label: 'Temperature', type: 'number', default: 0.8 },
+      { key: 'max_tokens', label: 'Max tokens', type: 'number', default: 4096 },
+      { key: 'system_prompt', label: 'System prompt', type: 'textarea' },
+    ],
+    inputPorts: [{ id: 'data', label: 'Dữ liệu', type: 'data' }],
+    outputPorts: [{ id: 'result', label: 'Kết quả', type: 'data' }],
+    defaultConfig: { prompt: '', input_field: 'content', style: 'academic', temperature: 0.8, max_tokens: 4096 },
+  },
+
+  'perplexity-sonar': {
+    id: 'perplexity-sonar', label: 'Perplexity Sonar', category: 'ai-model',
+    description: 'Tìm kiếm web thời gian thực có trích dẫn nguồn',
+    icon: 'Globe', color: 'bg-teal-700',
+    runtimeMapping: 'source',
+    basicFields: [
+      { key: 'query', label: 'Câu truy vấn tìm kiếm', type: 'textarea', placeholder: 'Tìm kiếm về...', required: true },
+      { key: 'focus', label: 'Lĩnh vực', type: 'select', options: [
+          { label: 'Tất cả web', value: 'web' },
+          { label: 'Học thuật', value: 'academic' },
+          { label: 'Tin tức', value: 'news' },
+          { label: 'YouTube', value: 'youtube' },
+        ], default: 'web' },
+      { key: 'language', label: 'Ngôn ngữ kết quả', type: 'select', options: [
+          { label: 'Tiếng Việt', value: 'vi' },
+          { label: 'Tiếng Anh', value: 'en' },
+        ], default: 'vi' },
+    ],
+    advancedFields: [
+      { key: 'max_results', label: 'Số kết quả tối đa', type: 'number', default: 5 },
+      { key: 'date_range', label: 'Phạm vi thời gian', type: 'select', options: [
+          { label: 'Bất kỳ', value: 'any' },
+          { label: '1 tháng qua', value: '1m' },
+          { label: '1 năm qua', value: '1y' },
+        ], default: 'any' },
+    ],
+    inputPorts: [],
+    outputPorts: [{ id: 'results', label: 'Kết quả tìm kiếm', type: 'data' }],
+    defaultConfig: { query: '', focus: 'web', language: 'vi', max_results: 5 },
+  },
+
+  'gamma-ai': {
+    id: 'gamma-ai', label: 'Gamma AI Slides', category: 'ai-model',
+    description: 'Tự động tạo slide bài giảng đẹp từ nội dung văn bản',
+    icon: 'Presentation', color: 'bg-pink-700',
+    runtimeMapping: 'act',
+    basicFields: [
+      { key: 'content', label: 'Nội dung/Dàn ý', type: 'textarea', placeholder: 'Dán nội dung hoặc nối từ bước trước...', required: true },
+      { key: 'slide_count', label: 'Số lượng slide', type: 'number', default: 10 },
+      { key: 'theme', label: 'Chủ đề thiết kế', type: 'select', options: [
+          { label: 'Academic (Học thuật)', value: 'academic' },
+          { label: 'Modern (Hiện đại)', value: 'modern' },
+          { label: 'Minimal (Tối giản)', value: 'minimal' },
+          { label: 'Colorful (Màu sắc)', value: 'colorful' },
+        ], default: 'academic' },
+    ],
+    advancedFields: [
+      { key: 'language', label: 'Ngôn ngữ', type: 'select', options: [{ label: 'Tiếng Việt', value: 'vi' }, { label: 'English', value: 'en' }], default: 'vi' },
+      { key: 'include_images', label: 'Thêm ảnh AI', type: 'toggle', default: true },
+      { key: 'export_format', label: 'Xuất file', type: 'select', options: [{ label: 'Link Gamma', value: 'link' }, { label: 'PDF', value: 'pdf' }, { label: 'PPTX', value: 'pptx' }], default: 'link' },
+    ],
+    inputPorts: [{ id: 'content', label: 'Nội dung', type: 'data' }],
+    outputPorts: [{ id: 'slides', label: 'Link Slides', type: 'data' }],
+    defaultConfig: { slide_count: 10, theme: 'academic', language: 'vi', include_images: true, export_format: 'link' },
+  },
+
+  'midjourney': {
+    id: 'midjourney', label: 'Midjourney v6', category: 'ai-model',
+    description: 'Tạo ảnh minh họa lịch sử chất lượng cao nghệ thuật',
+    icon: 'Image', color: 'bg-indigo-700',
+    runtimeMapping: 'act',
+    basicFields: [
+      { key: 'prompt', label: 'Image prompt', type: 'textarea', placeholder: 'Vietnamese soldiers, 1954, photorealistic, --ar 16:9', required: true },
+      { key: 'count', label: 'Số ảnh', type: 'number', default: 4 },
+      { key: 'aspect_ratio', label: 'Tỉ lệ', type: 'select', options: [
+          { label: '16:9 (Slide)', value: '16:9' },
+          { label: '4:3', value: '4:3' },
+          { label: '1:1 (Vuông)', value: '1:1' },
+          { label: '9:16 (Dọc)', value: '9:16' },
+        ], default: '16:9' },
+    ],
+    advancedFields: [
+      { key: 'style', label: 'Style code', type: 'text', placeholder: '--style raw', helper: 'Thêm tham số MJ như --v 6 --q 2' },
+      { key: 'negative', label: 'Negative (tránh)', type: 'text', placeholder: 'blurry, modern, text' },
+    ],
+    inputPorts: [{ id: 'prompt_data', label: 'Prompt từ AI', type: 'data' }],
+    outputPorts: [{ id: 'images', label: 'Ảnh kết quả', type: 'data' }],
+    defaultConfig: { count: 4, aspect_ratio: '16:9' },
+  },
+
+  'canva-magic': {
+    id: 'canva-magic', label: 'Canva Magic Studio', category: 'ai-model',
+    description: 'Tạo infographic, poster và design học thuật',
+    icon: 'Palette', color: 'bg-cyan-700',
+    runtimeMapping: 'act',
+    basicFields: [
+      { key: 'design_type', label: 'Loại thiết kế', type: 'select', options: [
+          { label: 'Infographic', value: 'infographic' },
+          { label: 'Presentation', value: 'presentation' },
+          { label: 'Poster', value: 'poster' },
+          { label: 'Timeline', value: 'timeline' },
+        ], default: 'infographic' },
+      { key: 'content', label: 'Nội dung chính', type: 'textarea', placeholder: 'Nội dung cần đưa vào thiết kế...' },
+      { key: 'style', label: 'Phong cách', type: 'select', options: [
+          { label: 'Educational', value: 'educational' },
+          { label: 'Historical', value: 'historical' },
+          { label: 'Modern', value: 'modern' },
+        ], default: 'educational' },
+    ],
+    advancedFields: [
+      { key: 'color_scheme', label: 'Bảng màu', type: 'select', options: [{ label: 'Auto', value: 'auto' }, { label: 'Tối (Dark)', value: 'dark' }, { label: 'Sáng (Light)', value: 'light' }], default: 'auto' },
+    ],
+    inputPorts: [{ id: 'content', label: 'Nội dung', type: 'data' }],
+    outputPorts: [{ id: 'design', label: 'Link thiết kế', type: 'data' }],
+    defaultConfig: { design_type: 'infographic', style: 'educational', color_scheme: 'auto' },
+  },
+
+  'elevenlabs': {
+    id: 'elevenlabs', label: 'ElevenLabs TTS', category: 'ai-model',
+    description: 'Chuyển văn bản bài giảng thành audio narration tự nhiên',
+    icon: 'Volume2', color: 'bg-yellow-700',
+    runtimeMapping: 'act',
+    basicFields: [
+      { key: 'input_field', label: 'Trường văn bản', type: 'text', default: 'content', helper: 'Field từ bước trước' },
+      { key: 'voice', label: 'Giọng đọc', type: 'select', options: [
+          { label: 'Ngọc Hân (VI Female)', value: 'vi-female-1' },
+          { label: 'Minh Tuấn (VI Male)', value: 'vi-male-1' },
+          { label: 'Rachel (EN Female)', value: 'en-rachel' },
+        ], default: 'vi-female-1' },
+      { key: 'speed', label: 'Tốc độ', type: 'number', default: 1.0, helper: '0.8 = chậm, 1.0 = bình thường, 1.2 = nhanh' },
+    ],
+    advancedFields: [
+      { key: 'stability', label: 'Stability', type: 'number', default: 0.5 },
+      { key: 'similarity_boost', label: 'Similarity boost', type: 'number', default: 0.75 },
+    ],
+    inputPorts: [{ id: 'text', label: 'Văn bản', type: 'data' }],
+    outputPorts: [{ id: 'audio', label: 'File audio', type: 'data' }],
+    defaultConfig: { input_field: 'content', voice: 'vi-female-1', speed: 1.0, stability: 0.5, similarity_boost: 0.75 },
+  },
+
+  'whisper': {
+    id: 'whisper', label: 'OpenAI Whisper', category: 'ai-model',
+    description: 'Chuyển âm thanh/video thành văn bản (hỗ trợ tiếng Việt)',
+    icon: 'Mic', color: 'bg-slate-600',
+    runtimeMapping: 'source',
+    basicFields: [
+      { key: 'audio_source', label: 'Nguồn âm thanh', type: 'select', options: [
+          { label: 'Upload file', value: 'upload' },
+          { label: 'URL', value: 'url' },
+          { label: 'YouTube', value: 'youtube' },
+        ], default: 'upload' },
+      { key: 'language', label: 'Ngôn ngữ', type: 'select', options: [
+          { label: 'Tự nhận diện', value: 'auto' },
+          { label: 'Tiếng Việt', value: 'vi' },
+          { label: 'Tiếng Anh', value: 'en' },
+        ], default: 'auto' },
+      { key: 'timestamps', label: 'Bao gồm timestamps', type: 'toggle', default: false },
+    ],
+    advancedFields: [
+      { key: 'model_size', label: 'Model size', type: 'select', options: [{ label: 'Turbo (nhanh)', value: 'turbo' }, { label: 'Large-v3 (chính xác)', value: 'large-v3' }], default: 'turbo' },
+    ],
+    inputPorts: [],
+    outputPorts: [{ id: 'transcript', label: 'Văn bản', type: 'data' }],
+    defaultConfig: { audio_source: 'upload', language: 'auto', timestamps: false, model_size: 'turbo' },
   },
 };
 
