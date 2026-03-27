@@ -88,7 +88,7 @@ export const PROMPT_LIBRARY: PromptData[] = [
     tokens: '~150 tokens',
     time: '~3s',
     structure: 'Đầy đủ (Role + Task + Tone)',
-    category: 'Viết lách'
+    category: 'Công việc'
   },
   {
     id: 'p9',
@@ -118,7 +118,7 @@ export const PROMPT_LIBRARY: PromptData[] = [
     tokens: '~400 tokens',
     time: '~7s',
     structure: 'Đầy đủ (Role + Task + Evaluation)',
-    category: 'Nghiên cứu'
+    category: 'Công việc'
   },
   {
     id: 'p12',
@@ -218,7 +218,7 @@ export const PROMPT_LIBRARY: PromptData[] = [
     tokens: '~200 tokens',
     time: '~4s',
     structure: 'Chuyên nghiệp (Empathy + Responsibility + Solution)',
-    category: 'Viết lách'
+    category: 'Công việc'
   },
   {
     id: 'p22',
@@ -509,5 +509,25 @@ export const PROMPT_LIBRARY: PromptData[] = [
     time: '~5s',
     structure: 'Tư vấn (Context + Ideas + Reasons)',
     category: 'Sáng tạo'
+  },
+  {
+    id: 'p51',
+    title: 'Viết báo cáo công việc tuần',
+    text: 'Bạn là một nhân viên chuyên nghiệp. Viết báo cáo công việc tuần cho tôi dựa trên các đầu việc đã hoàn thành: [Liệt kê đầu việc]. Báo cáo cần có 3 phần: 1. Tóm tắt kết quả đạt được (highlight thành tích nổi bật), 2. Các vấn đề gặp phải & giải pháp đã áp dụng, 3. Kế hoạch tuần tới. Giọng văn chuyên nghiệp, súc tích.',
+    tags: ['Báo cáo', 'Công việc', 'Tuần'],
+    tokens: '~350 tokens',
+    time: '~6s',
+    structure: 'Cấu trúc 3 phần (Results + Issues + Plan)',
+    category: 'Công việc'
+  },
+  {
+    id: 'p52',
+    title: 'Lên kế hoạch dự án nhanh',
+    text: 'Tôi cần lập kế hoạch triển khai dự án "[Tên dự án]" trong vòng [Thời gian, ví dụ: 4 tuần]. Mục tiêu chính là [Mục tiêu]. Team gồm [Số người] người với vai trò [Liệt kê vai trò]. Hãy tạo: 1. Breakdown các milestone theo từng tuần, 2. Danh sách rủi ro tiềm ẩn và cách phòng tránh, 3. Tiêu chí đánh giá thành công.',
+    tags: ['Dự án', 'Kế hoạch', 'Quản lý'],
+    tokens: '~500 tokens',
+    time: '~9s',
+    structure: 'Quản lý dự án (Milestone + Risk + KPI)',
+    category: 'Công việc'
   }
 ];

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   GraduationCap, Sparkles, BookOpen, Zap,
-  Library, Users, Layout, Info, Plus, LogIn, LogOut, Bot,
+  Library, Users, Layout, Info, Plus, LogIn, LogOut, Bot, Sun, Moon,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import AuthModal from './AuthModal';
 
 // --- Sidebar item ---
@@ -44,6 +45,7 @@ export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
@@ -88,6 +90,16 @@ export default function Sidebar() {
         <div className="w-10 h-px bg-white/10 mb-1 shrink-0" />
         <SidebarItem icon={Layout} label="Dashboard"    to="/dashboard" active={isActive('/dashboard')} />
         <SidebarItem icon={Info}   label="Về chúng tôi" to="/about"     active={isActive('/about')} />
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Chuyển sang sáng' : 'Chuyển sang tối'}
+          className="w-full flex flex-col items-center gap-1 py-2.5 px-1 rounded-xl text-white/45 hover:text-white hover:bg-white/10 transition-all shrink-0"
+        >
+          {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          <span className="text-[10px] font-medium">{theme === 'dark' ? 'Sáng' : 'Tối'}</span>
+        </button>
 
         {/* Auth */}
         {user ? (

@@ -80,7 +80,7 @@ export default function Community() {
   ];
 
   return (
-    <div className="bg-slate-50 min-h-screen py-8">
+    <div className="bg-slate-50 dark:bg-[#0e0a20] min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -121,29 +121,29 @@ export default function Community() {
           <div className="lg:col-span-3 space-y-6">
             
             {/* Tabs & Search */}
-            <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-20 z-30">
+            <div className="bg-white dark:bg-slate-900/90 p-2 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-20 z-30">
               <div className="flex w-full sm:w-auto overflow-x-auto custom-scrollbar">
                 <button 
                   onClick={() => setActiveTab('discover')}
-                  className={`px-6 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${activeTab === 'discover' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                  className={`px-6 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${activeTab === 'discover' ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                 >
                   Khám phá
                 </button>
                 <button 
                   onClick={() => setActiveTab('review')}
-                  className={`px-6 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 ${activeTab === 'review' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20' : 'text-slate-600 hover:bg-slate-100'}`}
+                  className={`px-6 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 ${activeTab === 'review' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                 >
                   Cần đánh giá <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md text-xs">12</span>
                 </button>
                 <button 
                   onClick={() => setActiveTab('leaderboard')}
-                  className={`px-6 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${activeTab === 'leaderboard' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                  className={`px-6 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${activeTab === 'leaderboard' ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                 >
                   Bảng xếp hạng
                 </button>
                 <button 
                   onClick={() => setActiveTab('news')}
-                  className={`px-6 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 ${activeTab === 'news' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'text-slate-600 hover:bg-slate-100'}`}
+                  className={`px-6 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 ${activeTab === 'news' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                 >
                   <Newspaper size={16} /> Tin tức & Cập nhật
                 </button>
@@ -156,7 +156,7 @@ export default function Community() {
                   placeholder="Tìm kiếm bài viết..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500"
                 />
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function Community() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     key={post.id} 
-                    className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+                    className="bg-white dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
                   >
                     <div className="p-6 md:p-8">
                       {/* Author Info */}
@@ -182,8 +182,8 @@ export default function Community() {
                             </div>
                           </div>
                           <div>
-                            <div className="font-bold text-slate-900">{post.author.name}</div>
-                            <div className="text-xs text-slate-500 flex items-center gap-1">
+                            <div className="font-bold text-slate-900 dark:text-slate-100">{post.author.name}</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                               <Clock size={12} /> {post.time}
                             </div>
                           </div>
@@ -196,28 +196,28 @@ export default function Community() {
                       </div>
 
                       {/* Content */}
-                      <h2 className="text-xl font-bold text-slate-900 mb-3">{post.title}</h2>
-                      <p className="text-slate-600 leading-relaxed mb-4 line-clamp-3">{post.content}</p>
+                      <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">{post.title}</h2>
+                      <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-4 line-clamp-3">{post.content}</p>
                       
                       {/* Tags */}
                       <div className="flex flex-wrap gap-2 mb-6">
                         {post.tags.map((tag, idx) => (
-                          <span key={idx} className="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg text-xs font-medium">
+                          <span key={idx} className="bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-lg text-xs font-medium">
                             #{tag}
                           </span>
                         ))}
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                      <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50">
                         <div className="flex items-center gap-6">
-                          <button className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors font-medium text-sm">
+                          <button className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors font-medium text-sm">
                             <ThumbsUp size={18} /> {post.likes}
                           </button>
-                          <button className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors font-medium text-sm">
+                          <button className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors font-medium text-sm">
                             <MessageSquare size={18} /> {post.comments}
                           </button>
-                          <div className="flex items-center gap-2 text-slate-400 font-medium text-sm hidden sm:flex">
+                          <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 font-medium text-sm hidden sm:flex">
                             <Eye size={18} /> {post.views}
                           </div>
                         </div>
@@ -240,20 +240,20 @@ export default function Community() {
 
             {/* Leaderboard Tab */}
             {activeTab === 'leaderboard' && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-900/50 flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                     <Award className="text-yellow-500" /> Bảng vàng vinh danh
                   </h2>
-                  <select className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
+                  <select className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-blue-500">
                     <option>Tháng này</option>
                     <option>Tuần này</option>
                     <option>Tất cả thời gian</option>
                   </select>
                 </div>
-                <div className="divide-y divide-slate-100">
+                <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
                   {leaderboard.map((user, index) => (
-                    <div key={index} className={`p-4 sm:p-6 flex items-center gap-4 hover:bg-slate-50 transition-colors ${index < 3 ? 'bg-yellow-50/30' : ''}`}>
+                    <div key={index} className={`p-4 sm:p-6 flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors ${index < 3 ? 'bg-yellow-50/30 dark:bg-yellow-900/10' : ''}`}>
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0
                         ${index === 0 ? 'bg-yellow-100 text-yellow-600' : 
                           index === 1 ? 'bg-slate-200 text-slate-600' : 
@@ -263,8 +263,8 @@ export default function Community() {
                       </div>
                       <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover" referrerPolicy="no-referrer" />
                       <div className="flex-1">
-                        <div className="font-bold text-slate-900">{user.name}</div>
-                        <div className="text-sm text-slate-500 flex items-center gap-3 mt-1">
+                        <div className="font-bold text-slate-900 dark:text-slate-100">{user.name}</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-3 mt-1">
                           <span className="flex items-center gap-1"><Star size={14} className="text-yellow-500" /> {user.exp} EXP</span>
                           <span className="flex items-center gap-1"><Award size={14} className="text-purple-500" /> {user.badges} Huy hiệu</span>
                         </div>
@@ -286,18 +286,18 @@ export default function Community() {
                     <div className="bg-red-100 p-2 rounded-lg text-red-600">
                       <Youtube size={20} />
                     </div>
-                    <h2 className="text-xl font-bold text-slate-900">Content Creators Nổi Bật</h2>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Content Creators Nổi Bật</h2>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {creators.map(creator => (
-                      <div key={creator.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex gap-4">
+                      <div key={creator.id} className="bg-white dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-shadow flex gap-4">
                         <img src={creator.avatar} alt={creator.name} className="w-16 h-16 rounded-full object-cover border-2 border-slate-100 shrink-0" referrerPolicy="no-referrer" />
                         <div>
-                          <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                          <h3 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                             {creator.name}
-                            <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">{creator.platform}</span>
+                            <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full font-medium">{creator.platform}</span>
                           </h3>
-                          <p className="text-sm text-slate-600 mt-2 line-clamp-3">{creator.description}</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 line-clamp-3">{creator.description}</p>
                           <a href={creator.link} className="inline-flex items-center gap-1 text-sm text-blue-600 font-medium mt-3 hover:text-blue-800 transition-colors">
                             Theo dõi <ExternalLink size={14} />
                           </a>
@@ -313,33 +313,33 @@ export default function Community() {
                     <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
                       <Cpu size={20} />
                     </div>
-                    <h2 className="text-xl font-bold text-slate-900">Công Cụ & Mô Hình AI Mới</h2>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Công Cụ & Mô Hình AI Mới</h2>
                   </div>
                   <div className="space-y-4">
                     {tools.map(tool => (
-                      <div key={tool.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                      <div key={tool.id} className="bg-white dark:bg-slate-800/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex justify-between items-start mb-4">
                           <div>
-                            <h3 className="text-lg font-bold text-slate-900">{tool.name}</h3>
-                            <div className="text-sm text-slate-500 font-medium">{tool.provider}</div>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{tool.name}</h3>
+                            <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">{tool.provider}</div>
                           </div>
                           <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-lg text-xs font-bold">
                             {tool.price}
                           </span>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                          <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Sức mạnh / Ưu điểm</span>
-                            <span className="text-slate-700">{tool.strength}</span>
+                          <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700/30">
+                            <span className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Sức mạnh / Ưu điểm</span>
+                            <span className="text-slate-700 dark:text-slate-300">{tool.strength}</span>
                           </div>
-                          <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Mục đích sử dụng</span>
-                            <span className="text-slate-700">{tool.useCase}</span>
+                          <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700/30">
+                            <span className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Mục đích sử dụng</span>
+                            <span className="text-slate-700 dark:text-slate-300">{tool.useCase}</span>
                           </div>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-slate-100 text-sm">
-                          <span className="font-bold text-slate-700">Tác động: </span>
-                          <span className="text-slate-600">{tool.impact}</span>
+                        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/50 text-sm">
+                          <span className="font-bold text-slate-700 dark:text-slate-300">Tác động: </span>
+                          <span className="text-slate-600 dark:text-slate-400">{tool.impact}</span>
                         </div>
                       </div>
                     ))}
@@ -353,16 +353,16 @@ export default function Community() {
                       <div className="bg-purple-100 p-2 rounded-lg text-purple-600">
                         <Mail size={20} />
                       </div>
-                      <h2 className="text-xl font-bold text-slate-900">Newsletters Nổi Bật</h2>
+                      <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Newsletters Nổi Bật</h2>
                     </div>
                     <div className="space-y-4">
                       {newsletters.map(nl => (
-                        <div key={nl.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div key={nl.id} className="bg-white dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-shadow">
                           <div className="flex justify-between items-center mb-2">
-                            <h3 className="font-bold text-slate-900">{nl.name}</h3>
-                            <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">{nl.frequency}</span>
+                            <h3 className="font-bold text-slate-900 dark:text-slate-100">{nl.name}</h3>
+                            <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full font-medium">{nl.frequency}</span>
                           </div>
-                          <p className="text-sm text-slate-600 mb-3">{nl.description}</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">{nl.description}</p>
                           <a href={nl.link} className="inline-flex items-center gap-1 text-sm text-blue-600 font-medium hover:text-blue-800 transition-colors">
                             Đăng ký <ExternalLink size={14} />
                           </a>
@@ -376,16 +376,16 @@ export default function Community() {
                       <div className="bg-emerald-100 p-2 rounded-lg text-emerald-600">
                         <Globe size={20} />
                       </div>
-                      <h2 className="text-xl font-bold text-slate-900">Website & Blog</h2>
+                      <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Website & Blog</h2>
                     </div>
                     <div className="space-y-4">
                       {websites.map(site => (
-                        <div key={site.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div key={site.id} className="bg-white dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-shadow">
                           <div className="flex justify-between items-center mb-2">
-                            <h3 className="font-bold text-slate-900">{site.name}</h3>
-                            <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">{site.type}</span>
+                            <h3 className="font-bold text-slate-900 dark:text-slate-100">{site.name}</h3>
+                            <span className="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full font-medium">{site.type}</span>
                           </div>
-                          <p className="text-sm text-slate-600 mb-3">{site.description}</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">{site.description}</p>
                           <a href={site.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-blue-600 font-medium hover:text-blue-800 transition-colors">
                             Truy cập <ExternalLink size={14} />
                           </a>
@@ -422,13 +422,13 @@ export default function Community() {
             </div>
 
             {/* Popular Tags */}
-            <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-              <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700/50 p-6 shadow-sm">
+              <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
                 <Filter size={18} className="text-slate-400" /> Chủ đề phổ biến
               </h3>
               <div className="flex flex-wrap gap-2">
                 {['Đạo đức AI', 'Prompt Engineering', 'Midjourney', 'ChatGPT', 'Bản quyền', 'Deepfake', 'Nghiên cứu', 'Thảo luận'].map((tag, idx) => (
-                  <button key={idx} className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <button key={idx} className="bg-slate-50 dark:bg-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
                     #{tag}
                   </button>
                 ))}
@@ -436,8 +436,8 @@ export default function Community() {
             </div>
 
             {/* Top Contributors */}
-            <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-              <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700/50 p-6 shadow-sm">
+              <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
                 <UserCircle2 size={18} className="text-slate-400" /> Chuyên gia nổi bật
               </h3>
               <div className="space-y-4">
@@ -449,8 +449,8 @@ export default function Community() {
                   <div key={idx} className="flex items-center gap-3">
                     <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover" referrerPolicy="no-referrer" />
                     <div>
-                      <div className="font-bold text-sm text-slate-900">{user.name}</div>
-                      <div className="text-xs text-slate-500">{user.role}</div>
+                      <div className="font-bold text-sm text-slate-900 dark:text-slate-100">{user.name}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">{user.role}</div>
                     </div>
                   </div>
                 ))}
