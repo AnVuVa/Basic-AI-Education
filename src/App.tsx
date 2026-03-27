@@ -6,6 +6,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
+import About from './pages/About';
 import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
 import LMS from './pages/LMS';
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="library" element={<Library />} />
             <Route path="community" element={<Community />} />
             <Route path="lab" element={<Lab />} />
+            <Route path="about" element={<About />} />
           </Route>
           {/* LMS is outside Layout because it has its own full-screen layout */}
           <Route path="/learn/:id" element={<LMS />} />

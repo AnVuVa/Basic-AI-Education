@@ -1,337 +1,287 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Search, Sparkles, ArrowRight, Wand2,
+  BookOpen, Zap, Library, Users, Layout,
+  Plus, Info,
+} from 'lucide-react';
 import { motion } from 'motion/react';
-import { ArrowRight, ShieldAlert, BookX, AlertTriangle, ShieldCheck, Users, Lightbulb, BookOpen, Terminal, Library, Award, MessageSquare } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { FRAMES, CATEGORIES, QUICK_SUGGESTIONS, type WorkflowFrame } from '../data/frames';
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+// --- Sidebar ---
+
+type SidebarItemProps = {
+  icon: React.ElementType;
+  label: string;
+  to: string;
+  active?: boolean;
+  special?: boolean;
 };
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2
-    }
-  }
-};
+function SidebarItem({ icon: Icon, label, to, active, special }: SidebarItemProps) {
+  return (
+    <Link
+      to={to}
+      title={label}
+      className={`
+        w-full flex flex-col items-center gap-1 py-3 px-1 rounded-xl transition-all group relative
+        ${special
+          ? 'bg-purple-600 hover:bg-purple-500 text-white'
+          : active
+            ? 'bg-white/15 text-white'
+            : 'text-white/50 hover:text-white hover:bg-white/10'
+        }
+      `}
+    >
+      <Icon className="w-5 h-5" />
+      <span className="text-[10px] font-medium leading-tight text-center">{label}</span>
+    </Link>
+  );
+}
+
+// --- Frame Card ---
+
+function FrameCard({ frame, onClick }: { frame: WorkflowFrame; onClick: () => void }) {
+  return (
+    <motion.div
+      whileHover={{ y: -4, scale: 1.02 }}
+      onClick={onClick}
+      className="cursor-pointer rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/50 hover:shadow-2xl hover:shadow-purple-900/30 transition-all overflow-hidden group"
+    >
+      {/* Thumbnail */}
+      <div className={`h-32 bg-gradient-to-br ${frame.gradient} flex items-center justify-center relative`}>
+        <div className="text-white/80 group-hover:text-white group-hover:scale-110 transition-all">
+          {frame.icon}
+        </div>
+        <div className="absolute top-2.5 right-2.5 px-2 py-0.5 bg-black/30 backdrop-blur-sm rounded-full text-[10px] text-white font-semibold">
+          {frame.difficulty}
+        </div>
+        <div className="absolute bottom-2.5 left-2.5 flex gap-1 flex-wrap">
+          {frame.tools.slice(0, 3).map(t => (
+            <span key={t} className="px-1.5 py-0.5 bg-black/30 backdrop-blur-sm rounded text-[10px] text-white font-medium">
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+      {/* Body */}
+      <div className="p-3.5">
+        <div className="font-semibold text-white text-sm mb-1 leading-snug">{frame.title}</div>
+        <div className="text-xs text-white/50 line-clamp-2 leading-relaxed">{frame.description}</div>
+        <div className="flex flex-wrap gap-1 mt-2.5">
+          {frame.tags.slice(0, 2).map(tag => (
+            <span key={tag} className="px-2 py-0.5 bg-white/10 text-white/60 rounded-md text-[10px] font-medium">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div className="mt-3 py-1.5 bg-purple-600 text-white text-xs font-medium rounded-lg text-center opacity-0 group-hover:opacity-100 transition-all -translate-y-1 group-hover:translate-y-0">
+          Dùng frame này →
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// --- Main Component ---
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [query, setQuery] = useState('');
+  const [category, setCategory] = useState('Tất cả');
+
+  const filteredFrames = FRAMES.filter(f => {
+    const q = query.toLowerCase();
+    const matchesQuery = !q
+      || f.title.toLowerCase().includes(q)
+      || f.description.toLowerCase().includes(q)
+      || f.tags.some(t => t.toLowerCase().includes(q))
+      || f.category.toLowerCase().includes(q);
+    const matchesCategory = category === 'Tất cả' || f.category === category;
+    return matchesQuery && matchesCategory;
+  });
+
+  const handleGoToLab = () => navigate('/lab');
+
   return (
-    <div className="flex flex-col bg-white">
-      {/* 1. Hero Section */}
-      <section className="relative bg-slate-900 text-white overflow-hidden pt-20 pb-32 lg:pt-32 lg:pb-40">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/ai-education/1920/1080')] bg-cover bg-center mix-blend-overlay"></div>
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900"></div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div 
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainer}
-            >
-              <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-sm mb-6">
-                <span className="flex h-2 w-2 rounded-full bg-blue-400"></span>
-                Nền tảng giáo dục AI tiên phong
-              </motion.div>
-              <motion.h1 variants={fadeIn} className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-tight">
-                Làm chủ AI - Kiến tạo tương lai với <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-                  Đạo đức và Trách nhiệm số
-                </span>
-              </motion.h1>
-              <motion.p variants={fadeIn} className="text-lg text-slate-300 mb-10 max-w-xl">
-                BAIEdu là nền tảng tiên phong giúp người không chuyên thấu hiểu, ứng dụng và kiểm soát Trí tuệ nhân tạo một cách hiệu quả và tử tế.
-              </motion.p>
-              <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4">
-                <Link to="/courses" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-500/25">
-                  Học thử miễn phí ngay <ArrowRight size={20} />
-                </Link>
-                <Link to="/library" className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition-all">
-                  Khám phá lộ trình
-                </Link>
-              </motion.div>
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative hidden lg:block"
-            >
-              <div className="aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative">
-                <img src="https://picsum.photos/seed/student-ai/800/600" alt="Học sinh tương tác với AI" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/40 to-transparent mix-blend-overlay"></div>
-                {/* Floating elements to make it look techy */}
-                <div className="absolute top-6 left-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 shadow-xl">
-                  <ShieldCheck className="text-emerald-400" size={24} />
-                  <div className="text-sm font-medium text-white">AI Ethics Verified</div>
-                </div>
-                <div className="absolute bottom-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 shadow-xl">
-                  <div className="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></div>
-                  <div className="text-sm font-medium text-white">Data Processing...</div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+    <div className="flex h-[calc(100vh-73px)] overflow-hidden">
 
-      {/* 2. Problem Section */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeIn}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Mặt trái của sự bùng nổ AI</h2>
-            <p className="text-lg text-slate-600">Sự phát triển quá nhanh của Trí tuệ nhân tạo đang để lại những khoảng trống lớn trong nhận thức và giáo dục.</p>
-          </motion.div>
+      {/* ── Left Sidebar (Canva-style) ── */}
+      <div className="w-[76px] bg-[#1e0a3c] flex flex-col items-center pt-3 pb-4 gap-1 border-r border-white/10 shrink-0 overflow-y-auto">
+        {/* Create new */}
+        <SidebarItem icon={Plus} label="Tạo mới" to="/lab" special />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={staggerContainer}
-              className="space-y-6"
-            >
-              <motion.div variants={fadeIn} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex gap-4">
-                <div className="w-12 h-12 bg-red-50 text-red-500 rounded-xl flex items-center justify-center shrink-0">
-                  <BookX size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">Đạo văn & Gian lận học thuật</h3>
-                  <p className="text-slate-600">Sự lạm dụng AI tạo sinh khiến học sinh, sinh viên phụ thuộc, đánh mất khả năng tự nghiên cứu và viết lách.</p>
-                </div>
-              </motion.div>
+        <div className="w-10 h-px bg-white/10 my-2" />
 
-              <motion.div variants={fadeIn} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex gap-4">
-                <div className="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center shrink-0">
-                  <ShieldAlert size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">Thui chột tư duy phản biện</h3>
-                  <p className="text-slate-600">Tiếp nhận thông tin từ AI một cách thụ động mà không có khả năng kiểm chứng tính đúng sai của dữ liệu.</p>
-                </div>
-              </motion.div>
+        <SidebarItem icon={Sparkles} label="Trang chủ" to="/" active />
+        <SidebarItem icon={BookOpen} label="Khóa học" to="/courses" />
+        <SidebarItem icon={Zap} label="Phòng Lab" to="/lab" />
+        <SidebarItem icon={Library} label="Thư viện" to="/library" />
+        <SidebarItem icon={Users} label="Cộng đồng" to="/community" />
 
-              <motion.div variants={fadeIn} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex gap-4">
-                <div className="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center shrink-0">
-                  <AlertTriangle size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">Tin giả & Deepfake</h3>
-                  <p className="text-slate-600">Không thể phân biệt được nội dung thật giả, dễ dàng trở thành nạn nhân hoặc công cụ lan truyền thông tin sai lệch.</p>
-                </div>
-              </motion.div>
-            </motion.div>
+        <div className="flex-1" />
+        <div className="w-10 h-px bg-white/10 mb-2" />
 
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeIn}
-              className="bg-blue-900 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-blue-500 rounded-full blur-3xl opacity-20"></div>
-              <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-orange-500 rounded-full blur-3xl opacity-20"></div>
-              
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 border border-white/20">
-                  <AlertTriangle size={32} className="text-orange-400" />
-                </div>
-                <h3 className="text-3xl font-bold mb-4">Khoảng trống giáo dục</h3>
-                <p className="text-blue-100 text-lg leading-relaxed mb-8">
-                  Hiện nay, <span className="text-white font-semibold">thiếu vắng hoàn toàn</span> các chương trình đào tạo Đạo đức AI chính thống tại trường học. Học sinh đang phải tự bơi trong biển thông tin mà không có "la bàn" định hướng.
-                </p>
-                <div className="bg-white/10 border border-white/20 rounded-xl p-6 backdrop-blur-sm">
-                  <p className="text-sm text-blue-200 uppercase tracking-wider font-semibold mb-2">Hậu quả</p>
-                  <p className="text-white font-medium">Một thế hệ có thể thao tác công cụ rất giỏi, nhưng thiếu trách nhiệm và nhận thức về tác động của công nghệ đối với xã hội.</p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+        <SidebarItem icon={Layout} label="Dashboard" to="/dashboard" />
+        <SidebarItem icon={Info} label="Về chúng tôi" to="/about" />
+      </div>
 
-      {/* 3. Solution Section */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Giải pháp từ BAIEdu</h2>
-            <p className="text-lg text-slate-600">3 trụ cột cốt lõi giúp định hình tư duy và trang bị kỹ năng cho thế hệ công dân số mới.</p>
-          </motion.div>
+      {/* ── Main Content ── */}
+      <div className="flex-1 bg-gradient-to-br from-[#1e0a3c] via-[#0f0f2e] to-[#071428] overflow-y-auto">
 
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          >
-            <motion.div variants={fadeIn} className="text-center p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300">
-              <div className="w-20 h-20 mx-auto bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 rotate-3 hover:rotate-0 transition-transform">
-                <ShieldCheck size={40} />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Nền tảng Đạo đức & Trách nhiệm</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Xây dựng nhận thức đúng đắn về bản quyền, bảo mật dữ liệu và tính công bằng. Giúp người học biết giới hạn của AI và cách sử dụng nó một cách tử tế.
-              </p>
-            </motion.div>
-
-            <motion.div variants={fadeIn} className="text-center p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300">
-              <div className="w-20 h-20 mx-auto bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 -rotate-3 hover:rotate-0 transition-transform">
-                <Users size={40} />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Bình dân học vụ số AI</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Đơn giản hóa các khái niệm công nghệ phức tạp. Bất kỳ ai, dù không có nền tảng IT, cũng có thể hiểu và làm chủ AI thông qua ngôn ngữ gần gũi, dễ hiểu.
-              </p>
-            </motion.div>
-
-            <motion.div variants={fadeIn} className="text-center p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300">
-              <div className="w-20 h-20 mx-auto bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mb-6 rotate-3 hover:rotate-0 transition-transform">
-                <Lightbulb size={40} />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Đồng kiến tạo thay vì ỷ lại</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Chuyển đổi tư duy từ việc "nhờ AI làm hộ" sang "cùng AI sáng tạo". Biến AI thành người trợ lý đắc lực để nâng cao hiệu suất và chất lượng công việc.
-              </p>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 4. Features Section (Bento Grid) */}
-      <section className="py-24 bg-slate-900 text-white overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Hệ sinh thái tính năng toàn diện</h2>
-            <p className="text-lg text-slate-400">Mọi công cụ bạn cần để học tập và làm chủ AI đều được tích hợp trong một nền tảng duy nhất.</p>
-          </motion.div>
-
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[200px]"
-          >
-            {/* Feature 1: Hệ thống khóa học (Large) */}
-            <motion.div variants={fadeIn} className="md:col-span-2 lg:col-span-2 row-span-2 bg-gradient-to-br from-blue-900 to-slate-800 rounded-3xl p-8 border border-white/10 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition-colors"></div>
-              <div className="relative z-10 h-full flex flex-col">
-                <div className="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-blue-500/30">
-                  <BookOpen size={28} />
-                </div>
-                <h3 className="text-2xl font-bold mb-3">Hệ thống khóa học đa tầng</h3>
-                <p className="text-slate-300 mb-6 max-w-md">Lộ trình học tập được thiết kế bài bản từ cơ bản đến chuyên sâu, phù hợp với mọi đối tượng từ học sinh phổ thông đến sinh viên đại học.</p>
-                <div className="mt-auto">
-                  <img src="https://picsum.photos/seed/courses-ui/600/300" alt="Courses UI" className="rounded-xl border border-white/10 shadow-2xl transform translate-y-8 group-hover:translate-y-4 transition-transform duration-500" referrerPolicy="no-referrer" />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Feature 2: Interactive Lab */}
-            <motion.div variants={fadeIn} className="md:col-span-1 lg:col-span-2 row-span-1 bg-slate-800 rounded-3xl p-8 border border-white/10 relative overflow-hidden group">
-              <div className="relative z-10 flex items-center gap-6 h-full">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Terminal className="text-emerald-400" size={24} />
-                    <h3 className="text-xl font-bold">Interactive Lab & Gamification</h3>
-                  </div>
-                  <p className="text-slate-400 text-sm">Thực hành code Python và tương tác với AI model ngay trên trình duyệt web mà không cần cài đặt. Học qua các thử thách game hóa thú vị.</p>
-                </div>
-                <div className="hidden sm:block w-32 h-32 bg-slate-900 rounded-xl border border-white/5 p-2 shadow-inner">
-                  <div className="text-xs font-mono text-emerald-400">
-                    <p>{">"} import openai</p>
-                    <p>{">"} model.train()</p>
-                    <p className="animate-pulse">_</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Feature 3: Prompt Hub */}
-            <motion.div variants={fadeIn} className="md:col-span-1 lg:col-span-1 row-span-1 bg-slate-800 rounded-3xl p-8 border border-white/10 relative overflow-hidden">
-              <div className="w-12 h-12 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm border border-orange-500/30">
-                <Library size={24} />
-              </div>
-              <h3 className="text-lg font-bold mb-2">Prompt Engineering Hub</h3>
-              <p className="text-slate-400 text-sm">Thư viện hàng ngàn câu lệnh AI chuẩn mực, được kiểm duyệt kỹ lưỡng.</p>
-            </motion.div>
-
-            {/* Feature 4: Dashboard */}
-            <motion.div variants={fadeIn} className="md:col-span-1 lg:col-span-1 row-span-1 bg-slate-800 rounded-3xl p-8 border border-white/10 relative overflow-hidden">
-              <div className="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm border border-purple-500/30">
-                <Award size={24} />
-              </div>
-              <h3 className="text-lg font-bold mb-2">Dashboard & Phần thưởng</h3>
-              <p className="text-slate-400 text-sm">Theo dõi tiến độ, tích lũy điểm thưởng và nhận chứng chỉ "Công dân AI".</p>
-            </motion.div>
-
-            {/* Feature 5: Peer Review */}
-            <motion.div variants={fadeIn} className="md:col-span-2 lg:col-span-2 row-span-1 bg-gradient-to-r from-slate-800 to-blue-900/50 rounded-3xl p-8 border border-white/10 relative overflow-hidden flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <MessageSquare className="text-blue-400" size={24} />
-                  <h3 className="text-xl font-bold">Cộng đồng Peer Review</h3>
-                </div>
-                <p className="text-slate-400 text-sm max-w-md">Thảo luận, đánh giá chéo bài tập và học hỏi từ cộng đồng hàng ngàn học viên khác.</p>
-              </div>
-              <div className="hidden sm:flex -space-x-4">
-                <img className="w-12 h-12 rounded-full border-2 border-slate-800" src="https://picsum.photos/seed/u1/100/100" alt="User" referrerPolicy="no-referrer" />
-                <img className="w-12 h-12 rounded-full border-2 border-slate-800" src="https://picsum.photos/seed/u2/100/100" alt="User" referrerPolicy="no-referrer" />
-                <img className="w-12 h-12 rounded-full border-2 border-slate-800" src="https://picsum.photos/seed/u3/100/100" alt="User" referrerPolicy="no-referrer" />
-                <div className="w-12 h-12 rounded-full border-2 border-slate-800 bg-slate-700 flex items-center justify-center text-xs font-bold">+99</div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 5. Final CTA */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-slate-900"></div>
-        <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/pattern/1920/1080')] opacity-10 mix-blend-overlay"></div>
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        {/* Hero search */}
+        <div className="flex flex-col items-center pt-12 pb-6 px-8">
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-400/30 text-purple-300 px-4 py-1.5 rounded-full text-sm font-medium mb-6"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Sẵn sàng làm chủ công nghệ tương lai?</h2>
-            <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-              Tham gia cùng hàng ngàn học viên khác trên hành trình trở thành những công dân AI có trách nhiệm và năng lực.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/courses" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-500/25">
-                Đăng ký học thử miễn phí
-              </Link>
+            <Sparkles className="w-4 h-4" /> BAIEdu — Nền tảng giáo dục AI
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="text-4xl md:text-5xl font-bold text-white text-center mb-3"
+          >
+            Bạn muốn làm gì
+            <span className="text-purple-400"> hôm nay?</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-white/40 text-base text-center mb-8"
+          >
+            Chọn một frame gợi ý hoặc xây workflow của riêng bạn cùng AI
+          </motion.p>
+
+          {/* Search bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="w-full max-w-2xl"
+          >
+            <div className="relative">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 pointer-events-none" />
+              <input
+                type="text"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Tìm frame... vd: thuyết trình, phân tích tài liệu, ôn thi"
+                className="w-full pl-14 pr-5 py-4 bg-white/8 border border-white/15 text-white placeholder:text-white/25 rounded-2xl text-base focus:outline-none focus:bg-white/12 focus:border-purple-400/50 transition-all"
+              />
+            </div>
+
+            {/* Quick suggestions */}
+            <div className="flex flex-wrap gap-2 mt-4 justify-center">
+              {QUICK_SUGGESTIONS.map(s => (
+                <button
+                  key={s}
+                  onClick={() => setQuery(s)}
+                  className="px-3 py-1.5 bg-white/8 hover:bg-white/15 border border-white/12 hover:border-white/25 text-white/60 hover:text-white rounded-full text-sm transition-all"
+                >
+                  {s}
+                </button>
+              ))}
             </div>
           </motion.div>
         </div>
-      </section>
+
+        {/* Category filter */}
+        <div className="px-8 mb-5">
+          <div className="flex gap-2 flex-wrap">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  category === cat
+                    ? 'bg-purple-600 text-white shadow-sm shadow-purple-900/50'
+                    : 'bg-white/8 border border-white/12 text-white/50 hover:border-purple-400/40 hover:text-white'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Frame gallery */}
+        <div className="px-8 pb-10">
+          <p className="text-white/30 text-xs font-semibold uppercase tracking-widest mb-4">
+            {query
+              ? `${filteredFrames.length} kết quả cho "${query}"`
+              : 'Khám phá frame'}
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {/* Build from scratch */}
+            <motion.div
+              whileHover={{ y: -4 }}
+              onClick={handleGoToLab}
+              className="cursor-pointer rounded-2xl border-2 border-dashed border-purple-500/40 bg-purple-900/10 hover:border-purple-400/70 hover:bg-purple-900/20 transition-all flex flex-col items-center justify-center p-8 min-h-[220px] gap-3 group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-purple-600 group-hover:bg-purple-500 text-white flex items-center justify-center transition-colors">
+                <Wand2 className="w-6 h-6" />
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-purple-300 group-hover:text-white transition-colors">Xây từ đầu</div>
+                <div className="text-xs text-purple-400/70 mt-1">Trao đổi với AI để tạo frame riêng</div>
+              </div>
+            </motion.div>
+
+            {/* Frame cards */}
+            {filteredFrames.map((frame, i) => (
+              <motion.div
+                key={frame.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.04 }}
+              >
+                <FrameCard frame={frame} onClick={handleGoToLab} />
+              </motion.div>
+            ))}
+
+            {/* Empty state */}
+            {filteredFrames.length === 0 && (
+              <div className="col-span-full py-16 text-center text-white/30">
+                <Sparkles className="w-8 h-8 mx-auto mb-3 opacity-40" />
+                <div className="text-sm mb-4">Không tìm thấy frame phù hợp.</div>
+                <button
+                  onClick={handleGoToLab}
+                  className="px-5 py-2.5 bg-purple-600 text-white rounded-xl text-sm hover:bg-purple-500 transition-colors inline-flex items-center gap-2"
+                >
+                  Xây frame này cùng AI <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Quick links row */}
+          <div className="mt-10 pt-8 border-t border-white/8 grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: 'Khóa học', desc: 'Lộ trình học tập bài bản', to: '/courses', color: 'from-blue-600 to-blue-800' },
+              { label: 'Thư viện Prompt', desc: 'Hàng ngàn prompt AI', to: '/library', color: 'from-emerald-600 to-teal-800' },
+              { label: 'Cộng đồng', desc: 'Peer review & thảo luận', to: '/community', color: 'from-orange-600 to-red-800' },
+              { label: 'Dashboard', desc: 'Tiến độ & thành tích', to: '/dashboard', color: 'from-purple-600 to-indigo-800' },
+            ].map(item => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`bg-gradient-to-br ${item.color} rounded-2xl p-5 border border-white/10 hover:border-white/20 hover:scale-[1.02] transition-all group`}
+              >
+                <div className="font-bold text-white text-sm mb-1">{item.label}</div>
+                <div className="text-white/50 text-xs">{item.desc}</div>
+                <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-white/70 mt-3 transition-colors" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
