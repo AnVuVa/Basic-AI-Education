@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import LabLanding from '../components/LabLanding';
 import {
   ReactFlow,
   MiniMap,
@@ -345,15 +346,18 @@ const nodeTypes = {
 
 // --- Main Lab Component ---
 export default function Lab() {
+  const [labStage, setLabStage] = useState<'landing' | 'builder'>('landing');
+  const [pendingChatSeed, setPendingChatSeed] = useState<string | null>(null);
+
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [previewBlockId, setPreviewBlockId] = useState<string | null>(null);
-  
+
   // Prompt Library state
   const [isPromptLibraryOpen, setIsPromptLibraryOpen] = useState(false);
   const [selectedPromptsToCompare, setSelectedPromptsToCompare] = useState<string[]>([]);
-  
+
   // Chatbot state
   const [chatInput, setChatInput] = useState('');
   const [messages, setMessages] = useState<{role: 'user' | 'bot', text: string}[]>([
@@ -390,6 +394,38 @@ export default function Lab() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
+
+  // Auto-send frame chatSeed when entering builder from LabLanding
+  useEffect(() => {
+    if (!pendingChatSeed) return;
+    const seed = pendingChatSeed;
+    setPendingChatSeed(null);
+    setMessages(prev => [...prev, { role: 'user', text: seed }]);
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+      const lower = seed.toLowerCase();
+      if (lower.includes('thuyết trình') || lower.includes('lịch sử')) {
+        setMessages(prev => [...prev, { role: 'bot', text: 'Tôi đã tạo workflow hoàn chỉnh cho bài thuyết trình Lịch sử Việt Nam! Xem trên canvas nhé.' }]);
+        setNodes([
+          { id: 'node-1', type: 'custom', position: { x: 100, y: 200 }, data: { blockId: 'perplexity', label: 'Bước 1: Tìm & trích dẫn' } },
+          { id: 'node-2', type: 'custom', position: { x: 400, y: 200 }, data: { blockId: 'gemini', label: 'Bước 2: Tổng hợp nội dung' } },
+          { id: 'node-3', type: 'custom', position: { x: 700, y: 100 }, data: { blockId: 'gamma', label: 'Bước 3: Tạo slide' } },
+          { id: 'node-4', type: 'custom', position: { x: 700, y: 300 }, data: { blockId: 'midjourney', label: 'Bước 4: Tạo hình ảnh' } },
+        ] as Node[]);
+        setEdges([
+          { id: 'e1-2', source: 'node-1', target: 'node-2', animated: true, style: { stroke: '#3b82f6', strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6' } },
+          { id: 'e2-3', source: 'node-2', target: 'node-3', animated: true, style: { stroke: '#3b82f6', strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6' } },
+          { id: 'e2-4', source: 'node-2', target: 'node-4', animated: true, style: { stroke: '#3b82f6', strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6' } },
+        ] as Edge[]);
+        setSelectedNodeId('node-1');
+        setPreviewBlockId('perplexity');
+      } else {
+        setMessages(prev => [...prev, { role: 'bot', text: 'Đã nhận yêu cầu! Kéo thả các AI Block từ bảng bên trái vào canvas để bắt đầu xây dựng workflow của bạn.' }]);
+      }
+    }, 1200);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingChatSeed]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -553,9 +589,23 @@ export default function Lab() {
   }, []);
 
   const activeBlock = previewBlockId ? AI_BLOCKS[previewBlockId] : null;
-  const alternatives = activeBlock && selectedNodeId 
+  const alternatives = activeBlock && selectedNodeId
     ? Object.values(AI_BLOCKS).filter(b => b.category === activeBlock.category && b.id !== activeBlock.id)
     : [];
+
+  // Show landing/gallery before the builder
+  if (labStage === 'landing') {
+    return (
+      <div className="h-[calc(100vh-73px)]">
+        <LabLanding
+          onEnterBuilder={(chatSeed) => {
+            if (chatSeed) setPendingChatSeed(chatSeed);
+            setLabStage('builder');
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-[calc(100vh-73px)] bg-slate-50 overflow-hidden">
