@@ -165,6 +165,7 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
   // Block library state
   const [search, setSearch]                   = useState('');
   const [activeCategory, setActiveCategory]   = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(BLOCK_CATEGORIES.map(c => c.id)));
 
   // Right panel tab
   const [rightTab, setRightTab]               = useState<'inspector' | 'chat'>('inspector');
@@ -212,8 +213,8 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
       const q = msg.toLowerCase();
 
       if (q.includes('gmail') || q.includes('email') || q.includes('mail')) {
-        addBlockToCanvas('new-email');
-        setChatMessages(prev => [...prev, { role: 'bot', text: 'Đã thêm block "Có mail mới" lên canvas! Kéo để di chuyển và click để cấu hình.' }]);
+        // addBlockToCanvas('new-email');
+        setChatMessages(prev => [...prev, { role: 'bot', text: 'Tất nhiên rồi, đây là 1 pipeline mẫu để đặt lịch từ email! Kéo để di chuyển và click để cấu hình.' }]);
       } else if (q.includes('lọc') || q.includes('filter')) {
         addBlockToCanvas('email-filter');
         setChatMessages(prev => [...prev, { role: 'bot', text: 'Đã thêm block "Lọc nội dung email" vào canvas!' }]);
@@ -333,14 +334,26 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
 
   // ── Block library filter ─────────────────────────────────────────
 
-  const filteredBlocks = useMemo(() => {
+  const filteredBlocksByCategory = useMemo(() => {
     const q = search.toLowerCase();
-    return Object.values(BLOCK_REGISTRY).filter(b => {
-      const matchCat  = !activeCategory || b.category === activeCategory;
-      const matchText = !q || b.label.toLowerCase().includes(q) || b.description.toLowerCase().includes(q);
-      return matchCat && matchText;
+    const grouped: Record<string, typeof BLOCK_REGISTRY[string][]> = {};
+    
+    BLOCK_CATEGORIES.forEach(cat => {
+      grouped[cat.id] = [];
     });
-  }, [search, activeCategory]);
+
+    Object.values(BLOCK_REGISTRY).forEach(block => {
+      const matchText = !q || block.label.toLowerCase().includes(q) || block.description.toLowerCase().includes(q);
+      if (matchText) {
+        if (!grouped[block.category]) {
+          grouped[block.category] = [];
+        }
+        grouped[block.category].push(block);
+      }
+    });
+
+    return grouped;
+  }, [search]);
 
   // ── Render ───────────────────────────────────────────────────────
 
@@ -361,52 +374,61 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
           </div>
         </div>
 
-        {/* Category chips */}
-        <div className="px-2 pb-2 flex flex-wrap gap-1">
-          <button
-            onClick={() => setActiveCategory(null)}
-            className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${!activeCategory ? 'bg-sky-600 text-white' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'}`}
-          >
-            Tất cả
-          </button>
+        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-2">
           {BLOCK_CATEGORIES.map(cat => {
+            const blocks = filteredBlocksByCategory[cat.id] || [];
+            const isExpanded = expandedCategories.has(cat.id);
             const CatIcon = ((LucideIcons as Record<string,any>)[cat.icon] ?? LucideIcons.Box) as React.ElementType;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id === activeCategory ? null : cat.id)}
-                title={cat.label}
-                className={`px-1.5 py-0.5 rounded text-[10px] transition-colors ${activeCategory === cat.id ? `${cat.bgColor} text-white` : 'bg-slate-700 text-slate-400 hover:bg-slate-600'}`}
-              >
-                <CatIcon size={10} />
-              </button>
-            );
-          })}
-        </div>
+            
+            if (blocks.length === 0) return null;
 
-        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-1">
-          {filteredBlocks.map(block => {
-            const Icon = ((LucideIcons as Record<string,any>)[block.icon] ?? LucideIcons.Box) as React.ElementType;
             return (
-              <div
-                key={block.id}
-                draggable
-                onDragStart={e => { e.dataTransfer.setData('application/blockId', block.id); e.dataTransfer.effectAllowed = 'copy'; }}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 cursor-grab active:cursor-grabbing border border-transparent hover:border-slate-600 transition-all select-none"
-              >
-                <div className={`${block.color} rounded p-0.5 shrink-0`}>
-                  <Icon size={11} className="text-white" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-xs font-medium text-slate-200 truncate leading-tight">{block.label}</div>
-                  <div className="text-[9px] text-slate-500 truncate leading-tight">{block.description}</div>
-                </div>
+              <div key={cat.id} className="border border-slate-700/60 rounded-lg overflow-hidden bg-slate-800/50">
+                <button
+                  onClick={() => {
+                    const newExpanded = new Set(expandedCategories);
+                    if (isExpanded) {
+                      newExpanded.delete(cat.id);
+                    } else {
+                      newExpanded.add(cat.id);
+                    }
+                    setExpandedCategories(newExpanded);
+                  }}
+                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 transition-colors ${cat.bgColor} hover:opacity-90`}
+                  title={cat.label}
+                >
+                  <CatIcon size={12} className="text-white shrink-0" />
+                  <span className="text-[11px] font-semibold text-white flex-1 text-left">{cat.label}</span>
+                  <span className="text-[9px] text-white/60">{blocks.length}</span>
+                  <span className={`text-xs transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
+                </button>
+
+                {isExpanded && (
+                  <div className="p-1.5 space-y-1 bg-slate-900/50">
+                    {blocks.map(block => {
+                      const Icon = ((LucideIcons as Record<string,any>)[block.icon] ?? LucideIcons.Box) as React.ElementType;
+                      return (
+                        <div
+                          key={block.id}
+                          draggable
+                          onDragStart={e => { e.dataTransfer.setData('application/blockId', block.id); e.dataTransfer.effectAllowed = 'copy'; }}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 cursor-grab active:cursor-grabbing border border-transparent hover:border-slate-600 transition-all select-none"
+                        >
+                          <div className={`${block.color} rounded p-0.5 shrink-0`}>
+                            <Icon size={10} className="text-white" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-medium text-slate-200 truncate leading-tight">{block.label}</div>
+                            <div className="text-[8px] text-slate-500 truncate leading-tight">{block.description}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
-          {filteredBlocks.length === 0 && (
-            <p className="text-xs text-slate-500 text-center py-6">Không tìm thấy</p>
-          )}
         </div>
       </div>
 
