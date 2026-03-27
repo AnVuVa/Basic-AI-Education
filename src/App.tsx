@@ -21,15 +21,16 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Home has its own full-screen layout (no top navbar) */}
+          <Route path="/" element={<Home />} />
           <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
+            <Route path="about" element={<About />} />
             <Route path="courses" element={<Courses />} />
             <Route path="courses/:id" element={<CourseDetail />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="library" element={<Library />} />
             <Route path="community" element={<Community />} />
             <Route path="lab" element={<Lab />} />
-            <Route path="about" element={<About />} />
           </Route>
           {/* LMS is outside Layout because it has its own full-screen layout */}
           <Route path="/learn/:id" element={<LMS />} />

@@ -12,7 +12,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('baiedu_user');
-    return storedUser ? JSON.parse(storedUser) : null;
+    if (storedUser) return JSON.parse(storedUser);
+    // Pre-seeded admin account for development
+    const defaultAdmin: User = {
+      id: 'admin-001',
+      name: 'Admin',
+      email: 'admin@baiedu.vn',
+      role: 'admin',
+      avatar: 'https://picsum.photos/seed/baiedu-admin/100/100',
+    };
+    localStorage.setItem('baiedu_user', JSON.stringify(defaultAdmin));
+    return defaultAdmin;
   });
 
   const login = (userData: User) => {

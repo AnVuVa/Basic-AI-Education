@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import LabLanding from '../components/LabLanding';
 import {
   ReactFlow,
@@ -365,6 +366,19 @@ export default function Lab() {
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+
+  // If navigated from Home with a frame chatSeed or skipToBuilder, skip landing
+  useEffect(() => {
+    const state = location.state as { chatSeed?: string; skipToBuilder?: boolean } | null;
+    if (state?.chatSeed) {
+      setPendingChatSeed(state.chatSeed);
+      setLabStage('builder');
+    } else if (state?.skipToBuilder) {
+      setLabStage('builder');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true, style: { stroke: '#94a3b8', strokeWidth: 2 } } as Edge, eds)),
@@ -596,7 +610,7 @@ export default function Lab() {
   // Show landing/gallery before the builder
   if (labStage === 'landing') {
     return (
-      <div className="h-[calc(100vh-73px)]">
+      <div className="h-screen">
         <LabLanding
           onEnterBuilder={(chatSeed) => {
             if (chatSeed) setPendingChatSeed(chatSeed);
@@ -608,7 +622,7 @@ export default function Lab() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-73px)] bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       
       {/* Left Sidebar - Palette (Optional for demo, but good for UI completeness) */}
       <div className="w-64 bg-white border-r border-slate-200 flex flex-col z-10 shadow-sm hidden md:flex">

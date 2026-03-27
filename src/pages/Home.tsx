@@ -1,45 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import {
-  Search, Sparkles, ArrowRight, Wand2,
-  BookOpen, Zap, Library, Users, Layout,
-  Plus, Info,
-} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Sparkles, ArrowRight, Bot } from 'lucide-react';
 import { motion } from 'motion/react';
+import Sidebar from '../components/Sidebar';
+import WorkflowPreview from '../components/WorkflowPreview';
 import { FRAMES, CATEGORIES, QUICK_SUGGESTIONS, type WorkflowFrame } from '../data/frames';
 
-// --- Sidebar ---
-
-type SidebarItemProps = {
-  icon: React.ElementType;
-  label: string;
-  to: string;
-  active?: boolean;
-  special?: boolean;
-};
-
-function SidebarItem({ icon: Icon, label, to, active, special }: SidebarItemProps) {
-  return (
-    <Link
-      to={to}
-      title={label}
-      className={`
-        w-full flex flex-col items-center gap-1 py-3 px-1 rounded-xl transition-all group relative
-        ${special
-          ? 'bg-purple-600 hover:bg-purple-500 text-white'
-          : active
-            ? 'bg-white/15 text-white'
-            : 'text-white/50 hover:text-white hover:bg-white/10'
-        }
-      `}
-    >
-      <Icon className="w-5 h-5" />
-      <span className="text-[10px] font-medium leading-tight text-center">{label}</span>
-    </Link>
-  );
-}
-
-// --- Frame Card ---
+// --- Frame card ---
 
 function FrameCard({ frame, onClick }: { frame: WorkflowFrame; onClick: () => void }) {
   return (
@@ -48,23 +15,20 @@ function FrameCard({ frame, onClick }: { frame: WorkflowFrame; onClick: () => vo
       onClick={onClick}
       className="cursor-pointer rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/50 hover:shadow-2xl hover:shadow-purple-900/30 transition-all overflow-hidden group"
     >
-      {/* Thumbnail */}
-      <div className={`h-32 bg-gradient-to-br ${frame.gradient} flex items-center justify-center relative`}>
-        <div className="text-white/80 group-hover:text-white group-hover:scale-110 transition-all">
-          {frame.icon}
-        </div>
-        <div className="absolute top-2.5 right-2.5 px-2 py-0.5 bg-black/30 backdrop-blur-sm rounded-full text-[10px] text-white font-semibold">
+      {/* Workflow preview thumbnail */}
+      <div className="h-32 relative overflow-hidden bg-[#080818]">
+        <WorkflowPreview uid={frame.id} nodes={frame.preview.nodes} edges={frame.preview.edges} />
+        <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-[10px] text-white font-semibold">
           {frame.difficulty}
         </div>
-        <div className="absolute bottom-2.5 left-2.5 flex gap-1 flex-wrap">
+        <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap">
           {frame.tools.slice(0, 3).map(t => (
-            <span key={t} className="px-1.5 py-0.5 bg-black/30 backdrop-blur-sm rounded text-[10px] text-white font-medium">
+            <span key={t} className="px-1.5 py-0.5 bg-black/50 backdrop-blur-sm rounded text-[10px] text-white font-medium">
               {t}
             </span>
           ))}
         </div>
       </div>
-      {/* Body */}
       <div className="p-3.5">
         <div className="font-semibold text-white text-sm mb-1 leading-snug">{frame.title}</div>
         <div className="text-xs text-white/50 line-clamp-2 leading-relaxed">{frame.description}</div>
@@ -83,7 +47,7 @@ function FrameCard({ frame, onClick }: { frame: WorkflowFrame; onClick: () => vo
   );
 }
 
-// --- Main Component ---
+// --- Main ---
 
 export default function Home() {
   const navigate = useNavigate();
@@ -101,44 +65,33 @@ export default function Home() {
     return matchesQuery && matchesCategory;
   });
 
-  const handleGoToLab = () => navigate('/lab');
+  // Go directly to empty canvas
+  const handleBuildFromScratch = () => navigate('/lab', { state: { skipToBuilder: true } });
+
+  // Go to canvas with frame pre-loaded
+  const handleFrameClick = (frame: WorkflowFrame) =>
+    navigate('/lab', { state: { chatSeed: frame.chatSeed } });
 
   return (
-    <div className="flex h-[calc(100vh-73px)] overflow-hidden">
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar />
 
-      {/* ── Left Sidebar (Canva-style) ── */}
-      <div className="w-[76px] bg-[#1e0a3c] flex flex-col items-center pt-3 pb-4 gap-1 border-r border-white/10 shrink-0 overflow-y-auto">
-        {/* Create new */}
-        <SidebarItem icon={Plus} label="Tạo mới" to="/lab" special />
-
-        <div className="w-10 h-px bg-white/10 my-2" />
-
-        <SidebarItem icon={Sparkles} label="Trang chủ" to="/" active />
-        <SidebarItem icon={BookOpen} label="Khóa học" to="/courses" />
-        <SidebarItem icon={Zap} label="Phòng Lab" to="/lab" />
-        <SidebarItem icon={Library} label="Thư viện" to="/library" />
-        <SidebarItem icon={Users} label="Cộng đồng" to="/community" />
-
-        <div className="flex-1" />
-        <div className="w-10 h-px bg-white/10 mb-2" />
-
-        <SidebarItem icon={Layout} label="Dashboard" to="/dashboard" />
-        <SidebarItem icon={Info} label="Về chúng tôi" to="/about" />
-      </div>
-
-      {/* ── Main Content ── */}
+      {/* Main content */}
       <div className="flex-1 bg-gradient-to-br from-[#1e0a3c] via-[#0f0f2e] to-[#071428] overflow-y-auto">
 
-        {/* Hero search */}
-        <div className="flex flex-col items-center pt-12 pb-6 px-8">
+        {/* ── Hero + Search ── */}
+        <div className="flex flex-col items-center pt-12 pb-4 px-8">
+
+          {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-400/30 text-purple-300 px-4 py-1.5 rounded-full text-sm font-medium mb-6"
+            className="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-400/30 text-purple-300 px-4 py-1.5 rounded-full text-sm font-medium mb-5"
           >
             <Sparkles className="w-4 h-4" /> BAIEdu — Nền tảng giáo dục AI
           </motion.div>
 
+          {/* Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -152,17 +105,17 @@ export default function Home() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-white/40 text-base text-center mb-8"
+            transition={{ delay: 0.08 }}
+            className="text-white/40 text-base text-center mb-7"
           >
             Chọn một frame gợi ý hoặc xây workflow của riêng bạn cùng AI
           </motion.p>
 
-          {/* Search bar */}
+          {/* Search */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
+            transition={{ delay: 0.12 }}
             className="w-full max-w-2xl"
           >
             <div className="relative">
@@ -176,7 +129,7 @@ export default function Home() {
               />
             </div>
 
-            {/* Quick suggestions */}
+            {/* Quick suggestion pills */}
             <div className="flex flex-wrap gap-2 mt-4 justify-center">
               {QUICK_SUGGESTIONS.map(s => (
                 <button
@@ -188,11 +141,31 @@ export default function Home() {
                 </button>
               ))}
             </div>
+
+            {/* ── "Xây từ đầu" CTA (below search, above gallery) ── */}
+            <div className="flex items-center gap-4 mt-6 mb-2">
+              <div className="h-px flex-1 bg-white/10" />
+              <span className="text-white/30 text-sm">hoặc</span>
+              <div className="h-px flex-1 bg-white/10" />
+            </div>
+            <div className="flex justify-center">
+              <motion.button
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.18 }}
+                onClick={handleBuildFromScratch}
+                className="flex items-center gap-2 px-7 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-900/40"
+              >
+                <Bot className="w-4 h-4" />
+                Xây từ đầu cùng AI
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </div>
           </motion.div>
         </div>
 
-        {/* Category filter */}
-        <div className="px-8 mb-5">
+        {/* ── Category filter ── */}
+        <div className="px-8 mt-6 mb-4">
           <div className="flex gap-2 flex-wrap">
             {CATEGORIES.map(cat => (
               <button
@@ -210,31 +183,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Frame gallery */}
+        {/* ── Frame gallery ── */}
         <div className="px-8 pb-10">
           <p className="text-white/30 text-xs font-semibold uppercase tracking-widest mb-4">
-            {query
-              ? `${filteredFrames.length} kết quả cho "${query}"`
-              : 'Khám phá frame'}
+            {query ? `${filteredFrames.length} kết quả cho "${query}"` : 'Khám phá frame'}
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {/* Build from scratch */}
-            <motion.div
-              whileHover={{ y: -4 }}
-              onClick={handleGoToLab}
-              className="cursor-pointer rounded-2xl border-2 border-dashed border-purple-500/40 bg-purple-900/10 hover:border-purple-400/70 hover:bg-purple-900/20 transition-all flex flex-col items-center justify-center p-8 min-h-[220px] gap-3 group"
-            >
-              <div className="w-12 h-12 rounded-xl bg-purple-600 group-hover:bg-purple-500 text-white flex items-center justify-center transition-colors">
-                <Wand2 className="w-6 h-6" />
-              </div>
-              <div className="text-center">
-                <div className="font-bold text-purple-300 group-hover:text-white transition-colors">Xây từ đầu</div>
-                <div className="text-xs text-purple-400/70 mt-1">Trao đổi với AI để tạo frame riêng</div>
-              </div>
-            </motion.div>
-
-            {/* Frame cards */}
             {filteredFrames.map((frame, i) => (
               <motion.div
                 key={frame.id}
@@ -242,17 +197,16 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04 }}
               >
-                <FrameCard frame={frame} onClick={handleGoToLab} />
+                <FrameCard frame={frame} onClick={() => handleFrameClick(frame)} />
               </motion.div>
             ))}
 
-            {/* Empty state */}
             {filteredFrames.length === 0 && (
               <div className="col-span-full py-16 text-center text-white/30">
                 <Sparkles className="w-8 h-8 mx-auto mb-3 opacity-40" />
                 <div className="text-sm mb-4">Không tìm thấy frame phù hợp.</div>
                 <button
-                  onClick={handleGoToLab}
+                  onClick={handleBuildFromScratch}
                   className="px-5 py-2.5 bg-purple-600 text-white rounded-xl text-sm hover:bg-purple-500 transition-colors inline-flex items-center gap-2"
                 >
                   Xây frame này cùng AI <ArrowRight className="w-4 h-4" />
@@ -261,23 +215,23 @@ export default function Home() {
             )}
           </div>
 
-          {/* Quick links row */}
+          {/* ── Quick links row ── */}
           <div className="mt-10 pt-8 border-t border-white/8 grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: 'Khóa học', desc: 'Lộ trình học tập bài bản', to: '/courses', color: 'from-blue-600 to-blue-800' },
-              { label: 'Thư viện Prompt', desc: 'Hàng ngàn prompt AI', to: '/library', color: 'from-emerald-600 to-teal-800' },
-              { label: 'Cộng đồng', desc: 'Peer review & thảo luận', to: '/community', color: 'from-orange-600 to-red-800' },
-              { label: 'Dashboard', desc: 'Tiến độ & thành tích', to: '/dashboard', color: 'from-purple-600 to-indigo-800' },
+              { label: 'Khóa học',       desc: 'Lộ trình học tập bài bản',    to: '/courses',   color: 'from-blue-600 to-blue-800' },
+              { label: 'Thư viện Prompt', desc: 'Hàng ngàn prompt AI chuẩn',  to: '/library',   color: 'from-emerald-600 to-teal-800' },
+              { label: 'Cộng đồng',      desc: 'Peer review & thảo luận',     to: '/community', color: 'from-orange-600 to-red-800' },
+              { label: 'Dashboard',      desc: 'Tiến độ & thành tích của bạn', to: '/dashboard', color: 'from-purple-600 to-indigo-800' },
             ].map(item => (
-              <Link
+              <a
                 key={item.to}
-                to={item.to}
+                href={item.to}
                 className={`bg-gradient-to-br ${item.color} rounded-2xl p-5 border border-white/10 hover:border-white/20 hover:scale-[1.02] transition-all group`}
               >
                 <div className="font-bold text-white text-sm mb-1">{item.label}</div>
                 <div className="text-white/50 text-xs">{item.desc}</div>
                 <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-white/70 mt-3 transition-colors" />
-              </Link>
+              </a>
             ))}
           </div>
         </div>

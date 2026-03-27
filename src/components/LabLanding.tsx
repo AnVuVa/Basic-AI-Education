@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FRAMES, CATEGORIES, QUICK_SUGGESTIONS } from '../data/frames';
+import WorkflowPreview from './WorkflowPreview';
 
 // --- Props ---
 
@@ -222,19 +223,15 @@ export default function LabLanding({ onEnterBuilder }: Props) {
                 onClick={() => onEnterBuilder(frame.chatSeed)}
                 className="cursor-pointer rounded-2xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-100/50 transition-all overflow-hidden group"
               >
-                {/* Thumbnail */}
-                <div className={`h-36 bg-gradient-to-br ${frame.gradient} flex items-center justify-center relative`}>
-                  <div className="text-white/80 group-hover:text-white group-hover:scale-110 transition-all">
-                    {frame.icon}
-                  </div>
-                  {/* Difficulty badge */}
-                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 bg-black/30 backdrop-blur-sm rounded-full text-[10px] text-white font-semibold">
+                {/* Workflow preview thumbnail */}
+                <div className="h-36 relative overflow-hidden bg-[#080818]">
+                  <WorkflowPreview uid={frame.id} nodes={frame.preview.nodes} edges={frame.preview.edges} />
+                  <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-[10px] text-white font-semibold">
                     {frame.difficulty}
                   </div>
-                  {/* Tool chips */}
-                  <div className="absolute bottom-2.5 left-2.5 flex gap-1 flex-wrap">
+                  <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap">
                     {frame.tools.slice(0, 3).map(t => (
-                      <span key={t} className="px-1.5 py-0.5 bg-black/30 backdrop-blur-sm rounded text-[10px] text-white font-medium">
+                      <span key={t} className="px-1.5 py-0.5 bg-black/50 backdrop-blur-sm rounded text-[10px] text-white font-medium">
                         {t}
                       </span>
                     ))}

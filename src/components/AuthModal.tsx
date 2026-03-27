@@ -33,15 +33,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
     if (mode === 'login') {
       // Hardcoded mock login for demonstration
-      if (email === 'admin@example.com' && password === 'admin') {
-        login({ id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin' });
+      if ((email === 'admin@baiedu.vn' || email === 'admin@example.com') && password === 'admin') {
+        login({ id: 'admin-001', name: 'Admin', email, role: 'admin', avatar: 'https://picsum.photos/seed/baiedu-admin/100/100' });
         onClose();
       } else if (email === 'user@example.com' && password === 'user') {
-        login({ id: '2', name: 'Regular User', email: 'user@example.com', role: 'user' });
+        login({ id: '2', name: 'Regular User', email, role: 'regular', avatar: `https://picsum.photos/seed/${email}/100/100` });
         onClose();
       } else {
-        // Accept any login for now if not matching hardcoded ones
-        login({ id: Math.random().toString(36).substr(2, 9), name: email.split('@')[0], email: email, role: 'user' });
+        login({ id: Math.random().toString(36).substr(2, 9), name: email.split('@')[0], email, role: 'regular', avatar: `https://picsum.photos/seed/${email}/100/100` });
         onClose();
       }
     } else {
