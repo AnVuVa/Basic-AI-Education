@@ -10,14 +10,65 @@ export type PromptData = {
 };
 
 export const PROMPT_LIBRARY: PromptData[] = [
+  // ── Top picks: most detailed & complete prompts ────────────────
   {
-    id: 'p1',
-    title: 'Phân tích lịch sử cơ bản',
-    text: 'Hãy tóm tắt các sự kiện chính trong chiến tranh Việt Nam.',
-    tags: ['Lịch sử', 'Tóm tắt', 'Cơ bản'],
-    tokens: '~50 tokens',
-    time: '~2s',
-    structure: 'Đơn giản (Zero-shot)',
+    id: 'p52',
+    title: 'Lên kế hoạch dự án nhanh',
+    text: 'Tôi cần lập kế hoạch triển khai dự án "[Tên dự án]" trong vòng [Thời gian, ví dụ: 4 tuần]. Mục tiêu chính là [Mục tiêu]. Team gồm [Số người] người với vai trò [Liệt kê vai trò]. Hãy tạo: 1. Breakdown các milestone theo từng tuần, 2. Danh sách rủi ro tiềm ẩn và cách phòng tránh, 3. Tiêu chí đánh giá thành công.',
+    tags: ['Dự án', 'Kế hoạch', 'Quản lý'],
+    tokens: '~500 tokens',
+    time: '~9s',
+    structure: 'Quản lý dự án (Milestone + Risk + KPI)',
+    category: 'Công việc'
+  },
+  {
+    id: 'p11',
+    title: 'Tạo câu hỏi phỏng vấn',
+    text: 'Bạn là một chuyên gia nhân sự (HR). Hãy tạo danh sách 5 câu hỏi phỏng vấn hành vi (behavioral questions) cho vị trí [Tên vị trí], tập trung vào các kỹ năng: giải quyết vấn đề, làm việc nhóm và chịu áp lực. Kèm theo gợi ý cách đánh giá câu trả lời của ứng viên.',
+    tags: ['Nhân sự', 'Phỏng vấn', 'Đánh giá'],
+    tokens: '~400 tokens',
+    time: '~7s',
+    structure: 'Đầy đủ (Role + Task + Evaluation)',
+    category: 'Công việc'
+  },
+  {
+    id: 'p7',
+    title: 'Lập kế hoạch ôn thi',
+    text: 'Tôi có một kỳ thi môn [Tên môn] vào [Số ngày] ngày nữa. Khối lượng kiến thức bao gồm [Liệt kê các chương/chủ đề]. Hãy giúp tôi lập một thời gian biểu ôn tập chi tiết theo phương pháp Pomodoro, phân bổ thời gian hợp lý cho từng chủ đề và bao gồm cả thời gian làm bài thi thử.',
+    tags: ['Học tập', 'Kế hoạch', 'Pomodoro'],
+    tokens: '~400 tokens',
+    time: '~8s',
+    structure: 'Chi tiết (Context + Task + Method)',
+    category: 'Học tập'
+  },
+  {
+    id: 'p32',
+    title: 'Tạo lộ trình học tập (Roadmap)',
+    text: 'Tôi là người mới hoàn toàn và muốn trở thành [Ví dụ: Data Analyst, Frontend Developer] trong vòng 6 tháng. Hãy tạo một lộ trình học tập chi tiết từng tháng. Chỉ ra các kỹ năng cần học, công cụ cần nắm vững và gợi ý 1-2 dự án thực hành cho mỗi giai đoạn.',
+    tags: ['Học tập', 'Lộ trình', 'Định hướng'],
+    tokens: '~500 tokens',
+    time: '~9s',
+    structure: 'Chi tiết (Timeline + Skills + Projects)',
+    category: 'Học tập'
+  },
+  {
+    id: 'p46',
+    title: 'Thiết kế kiến trúc hệ thống',
+    text: 'Hãy thiết kế kiến trúc hệ thống (System Architecture) ở mức high-level cho một ứng dụng [Ví dụ: Đặt xe công nghệ, Mạng xã hội]. Liệt kê các thành phần chính (Frontend, Backend, Database, Caching, Message Queue) và giải thích luồng dữ liệu cơ bản.',
+    tags: ['System Design', 'Kiến trúc', 'Lập trình'],
+    tokens: '~600 tokens',
+    time: '~10s',
+    structure: 'Hệ thống (Components + Data Flow)',
+    category: 'Lập trình'
+  },
+  {
+    id: 'p3',
+    title: 'Tóm tắt tài liệu nghiên cứu',
+    text: 'Hãy đóng vai trò là một trợ lý nghiên cứu học thuật. Tôi sẽ cung cấp cho bạn một văn bản. Nhiệm vụ của bạn là tóm tắt các ý chính, phương pháp nghiên cứu và kết luận của văn bản đó trong khoảng 300 từ. Hãy giữ giọng văn khách quan và trích dẫn nguồn nếu có.',
+    tags: ['Học thuật', 'Tóm tắt', 'Khách quan'],
+    tokens: '~150 tokens',
+    time: '~4s',
+    structure: 'Đầy đủ (Role + Task + Constraint)',
     category: 'Nghiên cứu'
   },
   {
@@ -31,13 +82,55 @@ export const PROMPT_LIBRARY: PromptData[] = [
     category: 'Nghiên cứu'
   },
   {
-    id: 'p3',
-    title: 'Tóm tắt tài liệu nghiên cứu',
-    text: 'Hãy đóng vai trò là một trợ lý nghiên cứu học thuật. Tôi sẽ cung cấp cho bạn một văn bản. Nhiệm vụ của bạn là tóm tắt các ý chính, phương pháp nghiên cứu và kết luận của văn bản đó trong khoảng 300 từ. Hãy giữ giọng văn khách quan và trích dẫn nguồn nếu có.',
-    tags: ['Học thuật', 'Tóm tắt', 'Khách quan'],
-    tokens: '~150 tokens',
-    time: '~4s',
-    structure: 'Đầy đủ (Role + Task + Constraint)',
+    id: 'p12',
+    title: 'Viết bài blog chuẩn SEO',
+    text: 'Viết một bài blog dài khoảng 800 từ về chủ đề [Chủ đề]. Sử dụng từ khóa chính là "[Từ khóa 1]" và các từ khóa phụ "[Từ khóa 2], [Từ khóa 3]". Bài viết cần có thẻ H1, H2, H3 rõ ràng, một đoạn mở bài hấp dẫn và kết luận tóm tắt. Giọng văn thân thiện, dễ hiểu.',
+    tags: ['SEO', 'Blog', 'Marketing'],
+    tokens: '~800 tokens',
+    time: '~12s',
+    structure: 'Chi tiết (Task + Keywords + Format)',
+    category: 'Viết lách'
+  },
+  {
+    id: 'p29',
+    title: 'Phân tích đối thủ cạnh tranh',
+    text: 'Hãy đóng vai trò là chuyên gia phân tích thị trường. Phân tích 3 đối thủ cạnh tranh chính của [Tên thương hiệu/Sản phẩm] trong ngành [Tên ngành]. So sánh về: Giá cả, Tính năng cốt lõi, Chiến lược marketing, và Đánh giá của người dùng.',
+    tags: ['Kinh doanh', 'Phân tích', 'Thị trường'],
+    tokens: '~600 tokens',
+    time: '~10s',
+    structure: 'Nghiên cứu sâu (Role + Comparison Criteria)',
+    category: 'Nghiên cứu'
+  },
+  {
+    id: 'p44',
+    title: 'Phân tích báo cáo tài chính',
+    text: 'Đóng vai trò là một chuyên gia phân tích tài chính. Dựa trên các số liệu sau đây của công ty [Tên công ty]: [Cung cấp số liệu Doanh thu, Lợi nhuận, Nợ...], hãy đánh giá tình hình sức khỏe tài chính của công ty và chỉ ra các dấu hiệu đáng lo ngại (red flags) nếu có.',
+    tags: ['Tài chính', 'Phân tích', 'Đầu tư'],
+    tokens: '~500 tokens',
+    time: '~9s',
+    structure: 'Chuyên sâu (Role + Data Analysis + Red flags)',
+    category: 'Nghiên cứu'
+  },
+  {
+    id: 'p51',
+    title: 'Viết báo cáo công việc tuần',
+    text: 'Bạn là một nhân viên chuyên nghiệp. Viết báo cáo công việc tuần cho tôi dựa trên các đầu việc đã hoàn thành: [Liệt kê đầu việc]. Báo cáo cần có 3 phần: 1. Tóm tắt kết quả đạt được (highlight thành tích nổi bật), 2. Các vấn đề gặp phải & giải pháp đã áp dụng, 3. Kế hoạch tuần tới. Giọng văn chuyên nghiệp, súc tích.',
+    tags: ['Báo cáo', 'Công việc', 'Tuần'],
+    tokens: '~350 tokens',
+    time: '~6s',
+    structure: 'Cấu trúc 3 phần (Results + Issues + Plan)',
+    category: 'Công việc'
+  },
+
+  // ── Remaining prompts ──────────────────────────────────────────
+  {
+    id: 'p1',
+    title: 'Phân tích lịch sử cơ bản',
+    text: 'Hãy tóm tắt các sự kiện chính trong chiến tranh Việt Nam.',
+    tags: ['Lịch sử', 'Tóm tắt', 'Cơ bản'],
+    tokens: '~50 tokens',
+    time: '~2s',
+    structure: 'Đơn giản (Zero-shot)',
     category: 'Nghiên cứu'
   },
   {
@@ -71,16 +164,6 @@ export const PROMPT_LIBRARY: PromptData[] = [
     category: 'Lập trình'
   },
   {
-    id: 'p7',
-    title: 'Lập kế hoạch ôn thi',
-    text: 'Tôi có một kỳ thi môn [Tên môn] vào [Số ngày] ngày nữa. Khối lượng kiến thức bao gồm [Liệt kê các chương/chủ đề]. Hãy giúp tôi lập một thời gian biểu ôn tập chi tiết theo phương pháp Pomodoro, phân bổ thời gian hợp lý cho từng chủ đề và bao gồm cả thời gian làm bài thi thử.',
-    tags: ['Học tập', 'Kế hoạch', 'Pomodoro'],
-    tokens: '~400 tokens',
-    time: '~8s',
-    structure: 'Chi tiết (Context + Task + Method)',
-    category: 'Học tập'
-  },
-  {
     id: 'p8',
     title: 'Viết email xin việc',
     text: 'Hãy đóng vai trò là một ứng viên chuyên nghiệp. Viết một email xin việc ngắn gọn, ấn tượng cho vị trí [Tên vị trí] tại công ty [Tên công ty]. Nêu bật 2 kỹ năng chính là [Kỹ năng 1] và [Kỹ năng 2]. Giọng điệu tự tin, lịch sự.',
@@ -109,26 +192,6 @@ export const PROMPT_LIBRARY: PromptData[] = [
     time: '~6s',
     structure: 'Cấu trúc rõ ràng (Hook + Body + CTA)',
     category: 'Sáng tạo'
-  },
-  {
-    id: 'p11',
-    title: 'Tạo câu hỏi phỏng vấn',
-    text: 'Bạn là một chuyên gia nhân sự (HR). Hãy tạo danh sách 5 câu hỏi phỏng vấn hành vi (behavioral questions) cho vị trí [Tên vị trí], tập trung vào các kỹ năng: giải quyết vấn đề, làm việc nhóm và chịu áp lực. Kèm theo gợi ý cách đánh giá câu trả lời của ứng viên.',
-    tags: ['Nhân sự', 'Phỏng vấn', 'Đánh giá'],
-    tokens: '~400 tokens',
-    time: '~7s',
-    structure: 'Đầy đủ (Role + Task + Evaluation)',
-    category: 'Công việc'
-  },
-  {
-    id: 'p12',
-    title: 'Viết bài blog chuẩn SEO',
-    text: 'Viết một bài blog dài khoảng 800 từ về chủ đề [Chủ đề]. Sử dụng từ khóa chính là "[Từ khóa 1]" và các từ khóa phụ "[Từ khóa 2], [Từ khóa 3]". Bài viết cần có thẻ H1, H2, H3 rõ ràng, một đoạn mở bài hấp dẫn và kết luận tóm tắt. Giọng văn thân thiện, dễ hiểu.',
-    tags: ['SEO', 'Blog', 'Marketing'],
-    tokens: '~800 tokens',
-    time: '~12s',
-    structure: 'Chi tiết (Task + Keywords + Format)',
-    category: 'Viết lách'
   },
   {
     id: 'p13',
@@ -291,16 +354,6 @@ export const PROMPT_LIBRARY: PromptData[] = [
     category: 'Viết lách'
   },
   {
-    id: 'p29',
-    title: 'Phân tích đối thủ cạnh tranh',
-    text: 'Hãy đóng vai trò là chuyên gia phân tích thị trường. Phân tích 3 đối thủ cạnh tranh chính của [Tên thương hiệu/Sản phẩm] trong ngành [Tên ngành]. So sánh về: Giá cả, Tính năng cốt lõi, Chiến lược marketing, và Đánh giá của người dùng.',
-    tags: ['Kinh doanh', 'Phân tích', 'Thị trường'],
-    tokens: '~600 tokens',
-    time: '~10s',
-    structure: 'Nghiên cứu sâu (Role + Comparison Criteria)',
-    category: 'Nghiên cứu'
-  },
-  {
     id: 'p30',
     title: 'Tối ưu hóa Code (Refactoring)',
     text: 'Đoạn code [Ngôn ngữ] dưới đây đang chạy chậm và khó đọc. Hãy refactor (tối ưu hóa) lại nó để cải thiện hiệu suất (performance) và tuân thủ các nguyên tắc Clean Code (như SOLID). Giải thích những thay đổi bạn đã thực hiện. Code: [Chèn code]',
@@ -319,16 +372,6 @@ export const PROMPT_LIBRARY: PromptData[] = [
     time: '~5s',
     structure: 'Thuyết phục (Benefits + Action Words + CTA)',
     category: 'Viết lách'
-  },
-  {
-    id: 'p32',
-    title: 'Tạo lộ trình học tập (Roadmap)',
-    text: 'Tôi là người mới hoàn toàn và muốn trở thành [Ví dụ: Data Analyst, Frontend Developer] trong vòng 6 tháng. Hãy tạo một lộ trình học tập chi tiết từng tháng. Chỉ ra các kỹ năng cần học, công cụ cần nắm vững và gợi ý 1-2 dự án thực hành cho mỗi giai đoạn.',
-    tags: ['Học tập', 'Lộ trình', 'Định hướng'],
-    tokens: '~500 tokens',
-    time: '~9s',
-    structure: 'Chi tiết (Timeline + Skills + Projects)',
-    category: 'Học tập'
   },
   {
     id: 'p33',
@@ -441,16 +484,6 @@ export const PROMPT_LIBRARY: PromptData[] = [
     category: 'Sáng tạo'
   },
   {
-    id: 'p44',
-    title: 'Phân tích báo cáo tài chính',
-    text: 'Đóng vai trò là một chuyên gia phân tích tài chính. Dựa trên các số liệu sau đây của công ty [Tên công ty]: [Cung cấp số liệu Doanh thu, Lợi nhuận, Nợ...], hãy đánh giá tình hình sức khỏe tài chính của công ty và chỉ ra các dấu hiệu đáng lo ngại (red flags) nếu có.',
-    tags: ['Tài chính', 'Phân tích', 'Đầu tư'],
-    tokens: '~500 tokens',
-    time: '~9s',
-    structure: 'Chuyên sâu (Role + Data Analysis + Red flags)',
-    category: 'Nghiên cứu'
-  },
-  {
     id: 'p45',
     title: 'Viết kịch bản Telesale',
     text: 'Viết một kịch bản gọi điện bán hàng (Telesale) cho sản phẩm [Tên sản phẩm]. Kịch bản cần vượt qua sự từ chối ban đầu (ví dụ: "Tôi đang bận", "Tôi không có tiền"), đặt câu hỏi khơi gợi nhu cầu và chốt sale nhẹ nhàng.',
@@ -459,16 +492,6 @@ export const PROMPT_LIBRARY: PromptData[] = [
     time: '~7s',
     structure: 'Thuyết phục (Hook + Objection Handling + Close)',
     category: 'Viết lách'
-  },
-  {
-    id: 'p46',
-    title: 'Thiết kế kiến trúc hệ thống',
-    text: 'Hãy thiết kế kiến trúc hệ thống (System Architecture) ở mức high-level cho một ứng dụng [Ví dụ: Đặt xe công nghệ, Mạng xã hội]. Liệt kê các thành phần chính (Frontend, Backend, Database, Caching, Message Queue) và giải thích luồng dữ liệu cơ bản.',
-    tags: ['System Design', 'Kiến trúc', 'Lập trình'],
-    tokens: '~600 tokens',
-    time: '~10s',
-    structure: 'Hệ thống (Components + Data Flow)',
-    category: 'Lập trình'
   },
   {
     id: 'p47',
@@ -510,24 +533,4 @@ export const PROMPT_LIBRARY: PromptData[] = [
     structure: 'Tư vấn (Context + Ideas + Reasons)',
     category: 'Sáng tạo'
   },
-  {
-    id: 'p51',
-    title: 'Viết báo cáo công việc tuần',
-    text: 'Bạn là một nhân viên chuyên nghiệp. Viết báo cáo công việc tuần cho tôi dựa trên các đầu việc đã hoàn thành: [Liệt kê đầu việc]. Báo cáo cần có 3 phần: 1. Tóm tắt kết quả đạt được (highlight thành tích nổi bật), 2. Các vấn đề gặp phải & giải pháp đã áp dụng, 3. Kế hoạch tuần tới. Giọng văn chuyên nghiệp, súc tích.',
-    tags: ['Báo cáo', 'Công việc', 'Tuần'],
-    tokens: '~350 tokens',
-    time: '~6s',
-    structure: 'Cấu trúc 3 phần (Results + Issues + Plan)',
-    category: 'Công việc'
-  },
-  {
-    id: 'p52',
-    title: 'Lên kế hoạch dự án nhanh',
-    text: 'Tôi cần lập kế hoạch triển khai dự án "[Tên dự án]" trong vòng [Thời gian, ví dụ: 4 tuần]. Mục tiêu chính là [Mục tiêu]. Team gồm [Số người] người với vai trò [Liệt kê vai trò]. Hãy tạo: 1. Breakdown các milestone theo từng tuần, 2. Danh sách rủi ro tiềm ẩn và cách phòng tránh, 3. Tiêu chí đánh giá thành công.',
-    tags: ['Dự án', 'Kế hoạch', 'Quản lý'],
-    tokens: '~500 tokens',
-    time: '~9s',
-    structure: 'Quản lý dự án (Milestone + Risk + KPI)',
-    category: 'Công việc'
-  }
 ];
