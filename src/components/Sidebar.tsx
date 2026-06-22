@@ -78,7 +78,7 @@ export default function Sidebar() {
         <div className="w-8 h-px bg-white/10 my-0.5 shrink-0" />
 
         <SidebarItem icon={Sparkles} label="Trang chủ" to="/"          active={isActive('/')} />
-        <SidebarItem icon={BookOpen} label="Khóa học"  to="/courses"    active={isActive('/courses')} />
+        {/* <SidebarItem icon={BookOpen} label="Khóa học"  to="/courses"    active={isActive('/courses')} /> */}
         <SidebarItem icon={Zap}      label="Phòng Lab" to="/lab"         active={isActive('/lab')} />
         <SidebarItem icon={Bot}      label="AI Keys"   to="/ai-accounts" active={isActive('/ai-accounts')} />
         <SidebarItem icon={Library}  label="Thư viện"  to="/library"     active={isActive('/library')} />

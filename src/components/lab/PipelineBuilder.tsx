@@ -15,6 +15,7 @@ import PipelineBlockNode from './PipelineBlockNode';
 import { BLOCK_REGISTRY, BLOCK_CATEGORIES } from '../../data/pipeline/blockRegistry';
 import { AI_PROVIDER_META } from '../../data/pipeline/aiProviders';
 import { BAI_PROMPT_LIBRARY, getPromptsForBlock, type BAIPrompt } from '../../data/pipeline/promptLibrary';
+import { PIPELINE_TEMPLATES } from '../../data/pipeline/pipelineTemplates';
 import { usePipeline } from '../../contexts/PipelineContext';
 import type { Pipeline, PipelineNode, PipelineEdge, FieldDef, PipelinePolicy } from '../../types/pipeline';
 import { DEFAULT_POLICY } from '../../types/pipeline';
@@ -44,7 +45,7 @@ function FieldInput({ field, value, onChange }: {
       return (
         <label className="flex items-center gap-2 cursor-pointer">
           <div onClick={() => onChange(!value)} className={`w-8 h-4 rounded-full transition-colors relative ${value ? 'bg-sky-600' : 'bg-slate-600'}`}>
-            <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${value ? 'left-4' : 'left-0.5'}`} />
+            <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-slate-800 transition-all ${value ? 'left-4' : 'left-0.5'}`} />
           </div>
           <span className="text-xs text-slate-400">{value ? 'Bật' : 'Tắt'}</span>
         </label>
@@ -81,7 +82,7 @@ function PolicyEditor({ policy, onChange }: { policy: PipelinePolicy; onChange: 
         <label className="block text-[11px] text-slate-400 mb-1">Tự động hành động</label>
         <label className="flex items-center gap-2 cursor-pointer">
           <div onClick={() => set('autoActAllowed', autoActOn ? [] : ['*'])} className={`w-8 h-4 rounded-full transition-colors relative ${autoActOn ? 'bg-sky-600' : 'bg-slate-600'}`}>
-            <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${autoActOn ? 'left-4' : 'left-0.5'}`} />
+            <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-slate-800 transition-all ${autoActOn ? 'left-4' : 'left-0.5'}`} />
           </div>
           <span className="text-xs text-slate-400">{autoActOn ? 'Bật' : 'Tắt'}</span>
         </label>
@@ -177,14 +178,14 @@ function PromptModal({ blockId, onSelect, onClose }: {
                     <Star size={10} className="text-yellow-400 fill-yellow-400" />
                     <span className="text-[10px] text-yellow-400 font-semibold">{p.rating}</span>
                   </div>
-                  <div className="text-[9px] text-slate-600">{p.usageCount.toLocaleString()}</div>
+                  <div className="text-[9px] text-slate-400">{p.usageCount.toLocaleString()}</div>
                 </div>
               </div>
 
               {/* Expanded: full prompt + apply */}
               {expanded === p.id && (
                 <div className="px-5 pb-4 bg-slate-800/40">
-                  <div className="bg-slate-950 rounded-lg p-3 font-mono text-[11px] text-slate-300 whitespace-pre-wrap leading-relaxed mb-3 max-h-40 overflow-y-auto border border-slate-700/40">
+                  <div className="bg-slate-900 rounded-lg p-3 font-mono text-[11px] text-slate-300 whitespace-pre-wrap leading-relaxed mb-3 max-h-40 overflow-y-auto border border-slate-700/40">
                     {p.prompt}
                   </div>
                   <div className="flex items-center justify-between">
@@ -208,16 +209,10 @@ function PromptModal({ blockId, onSelect, onClose }: {
 
 // ── AI Model inspector tab ─────────────────────────────────────────
 
-function AIModelPanel({ blockId, onSwapBlock, currentPrompt }: {
-  blockId: string;
-  onSwapBlock: (newBlockId: string) => void;
-  currentPrompt?: string;
-}) {
+function AIModelPanel({ blockId, onSwapBlock }: { blockId: string; onSwapBlock: (newBlockId: string) => void }) {
   const meta = AI_PROVIDER_META[blockId];
   const [showPromptModal, setShowPromptModal] = useState(false);
   const [showAlts, setShowAlts] = useState(false);
-  const [publishState, setPublishState] = useState<'idle' | 'open' | 'submitted'>('idle');
-  const [contributedPrompt, setContributedPrompt] = useState('');
 
   if (!meta) return <p className="text-xs text-slate-500 text-center py-4">Không có metadata</p>;
 
@@ -312,59 +307,12 @@ function AIModelPanel({ blockId, onSwapBlock, currentPrompt }: {
         </div>
       )}
 
-      {/* Publish prompt contribution */}
-      {publishState === 'idle' && (
-        <button
-          onClick={() => { setPublishState('open'); setContributedPrompt(currentPrompt || ''); }}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-purple-900/30 hover:bg-purple-900/60 border border-purple-800/40 rounded-lg text-xs text-purple-300 transition-colors"
-        >
-          <Upload size={12} /> Đóng góp Prompt vào thư viện
-        </button>
-      )}
-
-      {publishState === 'open' && (
-        <div className="bg-slate-800/80 rounded-xl p-3 border border-purple-800/40 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-purple-300 flex items-center gap-1.5">
-              <Upload size={10} /> Đóng góp Prompt
-            </span>
-            <button onClick={() => setPublishState('idle')} className="text-slate-500 hover:text-slate-300 transition-colors">
-              <X size={12} />
-            </button>
-          </div>
-          <textarea
-            value={contributedPrompt}
-            onChange={e => setContributedPrompt(e.target.value)}
-            placeholder="Nhập prompt của bạn..."
-            rows={4}
-            className="w-full bg-slate-700 border border-slate-600 rounded-md px-2 py-1.5 text-xs text-slate-200 resize-none focus:outline-none focus:border-purple-500"
-          />
-          <p className="text-[10px] text-slate-500">Prompt sẽ được kiểm duyệt trước khi thêm vào thư viện.</p>
-          <button
-            onClick={() => {
-              if (!contributedPrompt.trim()) return;
-              setPublishState('submitted');
-              setTimeout(() => { setPublishState('idle'); setContributedPrompt(''); }, 3500);
-            }}
-            disabled={!contributedPrompt.trim()}
-            className="w-full bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-xs font-semibold py-1.5 rounded-lg transition-colors"
-          >
-            Gửi đóng góp
-          </button>
-        </div>
-      )}
-
-      {publishState === 'submitted' && (
-        <div className="bg-green-900/30 border border-green-800/40 rounded-xl p-3 text-center">
-          <div className="text-green-400 font-semibold mb-1">✓ Cảm ơn bạn!</div>
-          <p className="text-[11px] text-green-300/80">Prompt sẽ được xem xét và thêm vào thư viện cộng đồng BAIEdu.</p>
-        </div>
-      )}
-
       {showPromptModal && (
         <PromptModal
           blockId={blockId}
           onSelect={p => {
+            // The prompt will be applied by the parent via onSelect callback
+            // We emit via custom event for simplicity
             window.dispatchEvent(new CustomEvent('baiprompt:select', { detail: p }));
           }}
           onClose={() => setShowPromptModal(false)}
@@ -425,9 +373,6 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
   const [activeCategory, setActiveCategory]   = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(BLOCK_CATEGORIES.map(c => c.id)));
 
-  // AI-embed-on-drop state
-  const [pendingEmbed, setPendingEmbed]       = useState<{ aiNodeId: string; aiBlockId: string; targetNodeId: string; targetBlockId: string } | null>(null);
-
   // Right panel tab
   const [rightTab, setRightTab]               = useState<'inspector' | 'chat'>('inspector');
 
@@ -435,6 +380,7 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
   const [chatMessages, setChatMessages]       = useState<ChatMsg[]>(INITIAL_MSGS);
   const [chatInput, setChatInput]             = useState('');
   const [isTyping, setIsTyping]               = useState(false);
+  const [pendingTemplateIntent, setPendingTemplateIntent] = useState<{ id: string; label: string } | null>(null);
   const chatEndRef                            = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -443,6 +389,12 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
 
   const selectedNode  = nodes.find(n => n.id === selectedNodeId);
   const selectedBlock = selectedNode ? BLOCK_REGISTRY[selectedNode.data.blockId as string] : null;
+  const pendingTemplate = useMemo(
+    () => pendingTemplateIntent
+      ? PIPELINE_TEMPLATES.find(t => t.id === pendingTemplateIntent.id) ?? null
+      : null,
+    [pendingTemplateIntent]
+  );
 
   // ── Helpers ─────────────────────────────────────────────────────
 
@@ -459,6 +411,78 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
     }]);
   }, [nodes.length, setNodes]);
 
+  const importTemplateToCanvas = useCallback((templateId: string) => {
+    const template = PIPELINE_TEMPLATES.find(t => t.id === templateId);
+    if (!template) return false;
+
+    const rfNodes: RFNode[] = template.nodes.map(n => ({
+      id: n.id,
+      type: 'pipelineBlock',
+      position: n.position,
+      data: { blockId: n.blockId, config: n.config ?? {}, label: n.label ?? '' },
+    }));
+    const rfEdges: RFEdge[] = template.edges.map(e => ({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      sourceHandle: e.sourceHandle,
+      targetHandle: e.targetHandle,
+      label: e.label,
+      ...DEFAULT_EDGE_OPTIONS,
+    }));
+
+    const nextPolicy: PipelinePolicy = {
+      ...DEFAULT_POLICY,
+      ...policy,
+      ...template.policy,
+    };
+
+    setNodes(rfNodes);
+    setEdges(rfEdges);
+    setSelectedNodeId(null);
+    setPipelineName(template.name);
+    setPolicy(nextPolicy);
+
+    const pNodes: PipelineNode[] = rfNodes.map(n => ({
+      id: n.id,
+      blockId: n.data.blockId as string,
+      position: n.position,
+      config: (n.data.config as Record<string, any>) ?? {},
+      label: (n.data.label as string) || undefined,
+    }));
+    const pEdges: PipelineEdge[] = rfEdges.map(e => ({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      sourceHandle: e.sourceHandle ?? undefined,
+      targetHandle: e.targetHandle ?? undefined,
+      label: typeof e.label === 'string' ? e.label : undefined,
+    }));
+    onSave(pNodes, pEdges, template.name, nextPolicy);
+    return true;
+  }, [onSave, policy, setEdges, setNodes]);
+
+  const acceptPendingTemplate = useCallback(() => {
+    if (!pendingTemplateIntent) return;
+    const imported = importTemplateToCanvas(pendingTemplateIntent.id);
+    setChatMessages(prev => [...prev, {
+      role: 'bot',
+      text: imported
+        ? `Đã import template "${pendingTemplateIntent.label}" vào canvas. Bạn có thể chỉnh sửa hoặc bấm "Chạy thử" để demo ngay.`
+        : `Không thể import template "${pendingTemplateIntent.label}" lúc này.`,
+    }]);
+    setPendingTemplateIntent(null);
+  }, [importTemplateToCanvas, pendingTemplateIntent]);
+
+  const dismissPendingTemplate = useCallback(() => {
+    if (!pendingTemplateIntent) return;
+    setChatMessages(prev => [...prev, {
+      role: 'bot',
+      text: `Đã hủy đề xuất template "${pendingTemplateIntent.label}". Bạn có thể yêu cầu mình tạo template khác.`,
+    }]);
+    setPendingTemplateIntent(null);
+  }, [pendingTemplateIntent]);
+
   // ── Chat ────────────────────────────────────────────────────────
 
   const handleSendMessage = useCallback((e: React.FormEvent) => {
@@ -468,10 +492,119 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
     setChatMessages(prev => [...prev, { role: 'user', text: msg }]);
     setChatInput('');
     setIsTyping(true);
+    const responseDelayMs = 2000 + Math.floor(Math.random() * 1001);
 
     setTimeout(() => {
       setIsTyping(false);
       const q = msg.toLowerCase();
+
+      const templateIntents: Array<{
+        id: string;
+        label: string;
+        match: (text: string) => boolean;
+      }> = [
+        {
+          id: 'tpl-meeting-scheduler',
+          label: 'Đặt lịch từ email',
+          match: (text) =>
+            (text.includes('đặt lịch') && (text.includes('email') || text.includes('mail'))) ||
+            (text.includes('tạo pipeline') && text.includes('lịch') && (text.includes('email') || text.includes('mail'))) ||
+            text.includes('pipeline đặt lịch từ email'),
+        },
+        {
+          id: 'tpl-gmail-monitor',
+          label: 'Theo dõi Gmail quan trọng',
+          match: (text) =>
+            text.includes('theo dõi gmail') ||
+            (text.includes('gmail') && text.includes('quan trọng')) ||
+            text.includes('email quan trọng'),
+        },
+        {
+          id: 'tpl-mail-to-task',
+          label: 'Mail thành task',
+          match: (text) =>
+            (text.includes('mail') && text.includes('task')) ||
+            (text.includes('email') && text.includes('task')) ||
+            text.includes('email thành task') ||
+            text.includes('mail thành task'),
+        },
+        {
+          id: 'tpl-deadline-reminder',
+          label: 'Nhắc deadline thông minh',
+          match: (text) =>
+            text.includes('deadline') ||
+            text.includes('nhắc hạn') ||
+            text.includes('quá hạn'),
+        },
+        {
+          id: 'tpl-approval-tracker',
+          label: 'Theo dõi chờ phê duyệt',
+          match: (text) =>
+            text.includes('phê duyệt') ||
+            text.includes('approval') ||
+            text.includes('chờ duyệt'),
+        },
+        {
+          id: 'tpl-customer-followup',
+          label: 'Follow-up khách hàng',
+          match: (text) =>
+            text.includes('follow-up') ||
+            text.includes('follow up') ||
+            text.includes('khách hàng') ||
+            text.includes('lead'),
+        },
+        {
+          id: 'tpl-multichannel-summary',
+          label: 'Tóm tắt đa kênh hàng ngày',
+          match: (text) =>
+            (text.includes('tóm tắt') && text.includes('đa kênh')) ||
+            (text.includes('daily') && text.includes('summary')) ||
+            text.includes('digest hàng ngày'),
+        },
+        {
+          id: 'tpl-doc-monitor',
+          label: 'Theo dõi thay đổi tài liệu',
+          match: (text) =>
+            text.includes('tài liệu') ||
+            text.includes('docs') ||
+            text.includes('drive') ||
+            text.includes('thay đổi tài liệu'),
+        },
+        {
+          id: 'tpl-meeting-prep',
+          label: 'Chuẩn bị họp tự động',
+          match: (text) =>
+            text.includes('chuẩn bị họp') ||
+            text.includes('meeting prep') ||
+            text.includes('brief họp'),
+        },
+        {
+          id: 'tpl-inbox-assistant',
+          label: 'Trợ lý inbox cá nhân',
+          match: (text) =>
+            text.includes('trợ lý inbox') ||
+            text.includes('inbox assistant') ||
+            (text.includes('phân loại') && text.includes('email')),
+        },
+        {
+          id: 'tpl-lichsu-slide',
+          label: 'Tạo slide bài giảng Lịch Sử VN',
+          match: (text) =>
+            (text.includes('slide') && text.includes('lịch sử')) ||
+            text.includes('bài giảng lịch sử') ||
+            text.includes('lich su'),
+        },
+      ];
+
+      const matchedTemplate = templateIntents.find(t => t.match(q));
+      if (matchedTemplate) {
+        setPendingTemplateIntent({ id: matchedTemplate.id, label: matchedTemplate.label });
+        setChatMessages(prev => [...prev, {
+          role: 'bot',
+          text: `Mình vừa sinh xong bản nháp pipeline "${matchedTemplate.label}" dựa trên yêu cầu của bạn. Mình đã đặt nó vào khung preview trong Builder, bấm Accept để xác nhận import vào canvas nhé.`,
+        }]);
+        return;
+      }
 
       if (q.includes('gmail') || q.includes('email') || q.includes('mail')) {
         // addBlockToCanvas('new-email');
@@ -519,7 +652,7 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
           text: `Tôi chưa hiểu rõ yêu cầu này. Thử các lệnh: "thêm gmail trigger", "thêm lọc email", "thêm tóm tắt AI", "thêm thông báo", "thêm tạo task", "đếm block", "xóa canvas", "lưu".`,
         }]);
       }
-    }, 800);
+    }, responseDelayMs);
   }, [chatInput, isTyping, addBlockToCanvas, nodes, edges, onSave, pipelineName, policy]);
 
   // ── Drag & drop ──────────────────────────────────────────────────
@@ -553,53 +686,6 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
   }, []);
 
   const onPaneClick = useCallback(() => setSelectedNodeId(null), []);
-
-  // ── AI block drop-onto-block embed ───────────────────────────────
-
-  const onNodeDragStop = useCallback((_evt: React.MouseEvent, draggedNode: RFNode, currentNodes: RFNode[]) => {
-    const draggedBlock = BLOCK_REGISTRY[draggedNode.data.blockId as string];
-    if (draggedBlock?.category !== 'ai-model') return;
-
-    const BLOCK_W = 180;
-    const BLOCK_H = 90;
-
-    const target = currentNodes.find(n => {
-      if (n.id === draggedNode.id) return false;
-      const tb = BLOCK_REGISTRY[n.data.blockId as string];
-      if (!tb || tb.category === 'ai-model') return false;
-      const dx = Math.abs(n.position.x - draggedNode.position.x);
-      const dy = Math.abs(n.position.y - draggedNode.position.y);
-      return dx < BLOCK_W && dy < BLOCK_H;
-    });
-
-    if (target) {
-      setPendingEmbed({
-        aiNodeId: draggedNode.id,
-        aiBlockId: draggedNode.data.blockId as string,
-        targetNodeId: target.id,
-        targetBlockId: target.data.blockId as string,
-      });
-    }
-  }, []);
-
-  const confirmEmbed = useCallback(() => {
-    if (!pendingEmbed) return;
-    const { aiNodeId, aiBlockId, targetNodeId } = pendingEmbed;
-    const aiBlockDef = BLOCK_REGISTRY[aiBlockId];
-    setNodes(prev =>
-      prev
-        .filter(n => n.id !== aiNodeId)
-        .map(n =>
-          n.id === targetNodeId
-            ? { ...n, data: { ...n.data, embeddedAiId: aiBlockId, embeddedAiLabel: aiBlockDef?.label ?? aiBlockId } }
-            : n
-        )
-    );
-    setEdges(prev => prev.filter(e => e.source !== aiNodeId && e.target !== aiNodeId));
-    setPendingEmbed(null);
-  }, [pendingEmbed, setNodes, setEdges]);
-
-  const cancelEmbed = useCallback(() => setPendingEmbed(null), []);
 
   // ── Swap block ────────────────────────────────────────────────────
 
@@ -737,7 +823,7 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
                 >
                   <CatIcon size={12} className="text-white shrink-0" />
                   <span className="text-[11px] font-semibold text-white flex-1 text-left">{cat.label}</span>
-                  <span className="text-[9px] text-white/60">{blocks.length}</span>
+                  <span className="text-[9px] text-slate-400">{blocks.length}</span>
                   <span className={`text-xs transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
                 </button>
 
@@ -814,53 +900,50 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
             nodes={nodes} edges={edges}
             onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
             onConnect={onConnect} onNodeClick={onNodeClick} onPaneClick={onPaneClick}
-            onNodeDragStop={onNodeDragStop}
             nodeTypes={NODE_TYPES}
             defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
             fitView fitViewOptions={{ padding: 0.25 }}
-            className="bg-slate-950"
+            className="bg-slate-900"
           >
             <Background color="#1e293b" gap={20} />
             <Controls />
             <MiniMap nodeColor="#334155" maskColor="rgba(15,23,42,0.7)" className="!bg-slate-800 !border-slate-700" />
           </ReactFlow>
 
-          {/* AI embed confirmation overlay */}
-          {pendingEmbed && (() => {
-            const aiBlock = BLOCK_REGISTRY[pendingEmbed.aiBlockId];
-            const targetBlock = BLOCK_REGISTRY[pendingEmbed.targetBlockId];
-            return (
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-800 border border-sky-500/60 rounded-2xl shadow-2xl p-4 w-72 space-y-3 pointer-events-auto">
-                <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 ${aiBlock?.color ?? 'bg-slate-700'}`}>
-                    {AI_PROVIDER_META[pendingEmbed.aiBlockId]?.icon ?? '🤖'}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-100">Nhúng AI vào block?</p>
-                    <p className="text-[11px] text-slate-400 truncate">
-                      {aiBlock?.label} → {targetBlock?.label}
-                    </p>
-                  </div>
+          {pendingTemplateIntent && (
+            <div className="absolute top-4 right-4 z-20 w-[320px] bg-slate-900/75 backdrop-blur-md border border-sky-400/60 rounded-2xl shadow-[0_0_0_1px_rgba(56,189,248,0.2),0_12px_30px_rgba(0,0,0,0.45)] p-3">
+              <button
+                onClick={acceptPendingTemplate}
+                className="absolute top-2 right-2 px-2 py-1 rounded-md bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-semibold transition-colors"
+                title="Xác nhận import"
+              >
+                Accept
+              </button>
+              <div className="pr-16">
+                <div className="text-[10px] uppercase tracking-wider text-sky-300/90">Pipeline Preview</div>
+                <div className="mt-1 text-sm font-semibold text-slate-100">{pendingTemplateIntent.label}</div>
+                {pendingTemplate?.description && (
+                  <p className="mt-1 text-[11px] text-slate-300 leading-relaxed">{pendingTemplate.description}</p>
+                )}
+                <div className="mt-2 flex items-center gap-2 text-[10px] text-slate-400">
+                  <span>{pendingTemplate?.nodes.length ?? 0} nodes</span>
+                  <span>•</span>
+                  <span>{pendingTemplate?.edges.length ?? 0} edges</span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Block <span className="text-slate-200 font-medium">{targetBlock?.label}</span> sẽ được tăng cường bởi <span className="text-sky-300 font-medium">{aiBlock?.label}</span> và xử lý trực tiếp trong bước này.
-                </p>
-                <div className="flex gap-2">
-                  <button onClick={confirmEmbed} className="flex-1 bg-sky-700 hover:bg-sky-600 text-white text-xs font-bold py-2 rounded-xl transition-colors">
-                    Nhúng AI
-                  </button>
-                  <button onClick={cancelEmbed} className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold py-2 rounded-xl transition-colors">
-                    Bỏ qua
-                  </button>
-                </div>
+                <button
+                  onClick={dismissPendingTemplate}
+                  className="mt-3 px-2 py-1 rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200 text-[10px] transition-colors"
+                >
+                  Bỏ qua
+                </button>
               </div>
-            );
-          })()}
+            </div>
+          )}
         </div>
 
-        <div className="px-3 py-1 border-t border-slate-700/60 bg-slate-900 flex items-center gap-3 text-[10px] text-slate-600 shrink-0">
+        <div className="px-3 py-1 border-t border-slate-700/60 bg-slate-900 flex items-center gap-3 text-[10px] text-slate-400 shrink-0">
           <span>Kéo block từ thư viện</span>
-          <span>·</span><span>Thả block AI lên block khác để nhúng</span>
+          <span>·</span><span>Kéo handle để kết nối</span>
           <span>·</span><span>Click node để cấu hình</span>
           <span className="ml-auto">{nodes.length} nodes · {edges.length} edges</span>
         </div>
@@ -965,7 +1048,6 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
                   <AIModelPanel
                     blockId={selectedNode.data.blockId as string}
                     onSwapBlock={onSwapBlock}
-                    currentPrompt={(selectedNode.data.config as Record<string, any>)?.prompt as string | undefined}
                   />
                 )}
               </div>
@@ -1035,7 +1117,7 @@ function BuilderInner({ pipeline, onSave, onPublish, onRun, onBack, isRunning }:
                   <Send size={11} />
                 </button>
               </form>
-              <p className="text-[10px] text-slate-600 mt-1 text-center">
+              <p className="text-[10px] text-slate-400 mt-1 text-center">
                 "thêm gmail trigger" · "thêm thông báo" · "xóa canvas"
               </p>
             </div>
@@ -1071,3 +1153,5 @@ export default function PipelineBuilder({ pipelineId, onBack }: PipelineBuilderP
     </ReactFlowProvider>
   );
 }
+
+
